@@ -1,17 +1,16 @@
 require 'socket'
-require 'logger'
 class MySocket < UDPSocket
-	DEFAULT_ADDRESS = "127.0.0.1"
-	DEFAULT_PORT = 4444
-	def initialize(address = DEFAULT_ADDRESS,port = DEFAULT_PORT)
+	DEFAULT_SERVER_ADDRESS = "127.0.0.1"
+	DEFAULT_SERVER_PORT = 4444
+	DEFAULT_CLIENT_PORT = 4445
+	def initialize(logger,
+								 server = {:address=>DEFAULT_SERVER_ADDRESS,:port => DEFAULT_SERVER_PORT},
+								 client = {:address=>DEFAULT_SERVER_ADDRESS,:port => DEFAULT_CLIENT_PORT})
 		super(Socket::AF_INET)
-		bind("localhost",5555)
-		@server_address = address
-		@server_port = port
-		@log = Logger.new('log.txt')
-
-		@log.level = Logger::DEBUG
-		@log.debug "Client created successfully."
+		bind(client[:address],client[:port])
+		@server_address = server[:address]
+		@server_port = server[:port]
+		@log = logger
 	end
 	
 	def listen

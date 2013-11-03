@@ -1,3 +1,6 @@
 # Logfile created on 2013-11-02 18:50:50 -0600 by logger.rb/36483
 D, [2013-11-02T18:51:27.418946 #14034] DEBUG -- : Client created successfully.
 D, [2013-11-02T18:51:27.478321 #14034] DEBUG -- : Received (REG OK P1) from 127.0.0.1:4444
+D, [2013-11-02T18:58:02.999804 #14413] DEBUG -- : Client created successfully.
+D, [2013-11-02T18:58:03.011924 #14413] DEBUG -- : Sent (REG MICHIGAN) to 127.0.0.1:4444
+D, [2013-11-02T18:58:03.069706 #14413] DEBUG -- : Received (REG OK P1) from 127.0.0.1:4444

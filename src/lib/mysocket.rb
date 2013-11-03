@@ -22,6 +22,7 @@ class MySocket < UDPSocket
 
 	def send(message)
 		super message, 0, @server_address, @server_port
+		@log.debug "Sent #{message} to #{@server_address}:#{@server_port}"
 	end
 
 end

@@ -13,7 +13,7 @@ class Agent
 		@logger.debug "#{self.class} Received #{message.inspect}"
 		@last_message = message
 		set_attributes
-		@logger.debug "#{self.class}: The board is: #{@board}"
+#		@logger.debug "#{self.class}: The board is: #{@board}"
 		unless @next_plays.empty?
 			@last_play = @next_plays.last
 			return @next_plays.pop
@@ -31,8 +31,8 @@ class Agent
 					board.height = @last_message[1][1]
 					board.width = @last_message[1][2]
 					board.cells = @last_message[1][3]
-					@logger.debug "Agent: h = #{board.height}, w = #{board.width}"
 				end
+				@logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
 			elsif @last_message[1][4] != nil
 				@board.mines = @last_message[1][4]
 			end

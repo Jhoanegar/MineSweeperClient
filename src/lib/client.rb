@@ -30,7 +30,8 @@ class Client
 			 next if @interpreter.response[0] == "ON"
 			 break if @interpreter.response[0] == "FIN"
 			 next_play = @agent.play @interpreter.response
-			 @logger.debug "#{self.class}: I Will send #{next_play}"
+			 #@logger.debug "#{self.class}: I Will send #{next_play}"
+			 sleep(0.05)
 			 @socket.send next_play
 		end
 

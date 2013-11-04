@@ -9,6 +9,6 @@ require_relative 'lib/mylogger'
 #TODO: Deal with Options
 
 
-client = Client.new(MyLogger.new_logger('log.txt'))
+client = Client.new(MyLogger.new_logger('log.log'))
 client.start
 

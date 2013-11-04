@@ -4,15 +4,11 @@ require_relative 'lib/interpreter'
 require_relative 'lib/agent'
 require_relative 'lib/mysocket'
 require_relative 'lib/core_ext'
-require 'logger'
-file = File.open("log.txt","w")
-log = Logger.new(file)
-log.level = Logger::DEBUG
-log.debug "Program Started"
+require_relative 'lib/mylogger'
+
 #TODO: Deal with Options
 
-client = Client.new(log)
+
+client = Client.new(MyLogger.new_logger('log.txt'))
 client.start
-
-
 

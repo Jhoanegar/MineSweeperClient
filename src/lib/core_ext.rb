@@ -1,5 +1,5 @@
 class String
   def remove_parenthesis
-    self.gsub!(/[\(\)]/,"")
+    self[1..-2]
   end
 end

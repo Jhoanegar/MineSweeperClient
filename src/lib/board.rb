@@ -20,4 +20,8 @@ class Board
     end
     ret
   end
+
+  def cell(x_coord,y_coord)
+    return @cells[x_coord][y_coord]
+  end
 end

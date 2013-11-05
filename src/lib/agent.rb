@@ -10,7 +10,6 @@ class Agent
   end
 
   def play(message)
-    @logger.debug "#{self.class} Received #{message.inspect}"
     @last_message = message
     set_attributes
 #   @logger.debug "#{self.class}: The board is: #{@board}"
@@ -18,10 +17,22 @@ class Agent
       @last_play = @next_plays.last
       return @next_plays.pop
     end
-    @last_play =  "(UN #{Random.rand(0..@board.height)} #{Random.rand(0..@board.width)})"
+    # @last_play =  "(UN #{Random.rand(0..@board.height)} #{Random.rand(0..@board.width)})"
     return @last_play
   end
 
+  def repeat_last_play?
+    x = @last_play[:x]
+    y = @last_play[:y]
+    cmd = @last_play[:command]
+    return true if Interpreter.
+                    command_matches_state?(cmd,@board.cell(x,y))
+    return false
+  end
+
+  # def last_play
+    
+  # end
   def set_attributes
     command = @last_message[0]
     case command

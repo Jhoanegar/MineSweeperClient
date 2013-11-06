@@ -1,5 +1,9 @@
 class Board
+
+  include Enumerable
+
   attr_accessor :width, :height, :mines, :cells
+
   def initialize(width = nil,height = nil,mines = nil,cells = nil)
     @width = width
     @height = height
@@ -23,5 +27,9 @@ class Board
 
   def cell(x_coord,y_coord)
     return @cells[x_coord][y_coord]
+  end
+
+  def each(&block)
+    @cells.each(&block)
   end
 end

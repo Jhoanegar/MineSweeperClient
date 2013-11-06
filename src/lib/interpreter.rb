@@ -42,9 +42,10 @@ class Interpreter
       if $2 == "ON"
         @response = ["ON"]
       elsif $2 == "SCORE"
-        @response = ["SCORE",message.remove_parenthesis.split(" ")[3]]
+        @response = ["SCORE",message.remove_parenthesis.split(" ")[3].to_i]
       elsif $2 == "FIN"
-        @response = ["FIN",message.remove_parenthesis.split(" ")[-4..-1]]
+        @response = ["FIN",
+            message.remove_parenthesis.split(" ")[-4..-1]]
       end
     
     when RESPONSE_BOARD_STATE

@@ -1,11 +1,12 @@
 #Handles the logic 
 require_relative './board'
 class Agent
+  BOARD_STATUS = "BE"
   def initialize(logger)
     @logger = logger
     @board = nil
     @last_message = nil
-    @last_play = nil 
+    @last_play = {} 
     @next_plays = []
   end
 
@@ -21,7 +22,7 @@ class Agent
       @last_play = @next_plays.last
       return @next_plays.pop
     end
-  
+    puts "Gets to last Play" 
     @last_play[:x] = Random.rand(0..@board.width)
     @last_play[:y] = Random.rand(0..@board.height)
     @last_play[:command] = "UN"
@@ -30,7 +31,7 @@ class Agent
   end
 
   def repeat_last_play?
-    return true if @last_play.nil?
+    return false if @last_play.nil?
     x = @last_play[:x]
     y = @last_play[:y]
     cmd = @last_play[:command]
@@ -42,7 +43,7 @@ class Agent
   def set_attributes
     command = @last_message[0]
     case command
-    when "BE"
+    when BOARD_STATUS
       if @board.nil?
         @board = Board.new do |board|
           board.height = @last_message[1][1]

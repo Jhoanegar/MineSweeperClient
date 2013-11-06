@@ -10,14 +10,13 @@ class Interpreter
     cell_state = cell.chars.last
     case command 
     when "UN"
-      return true if cell_state =~ /[E\d]/
+      return true if cell_state =~ /.*[E\d]$/
     when "SF"
-      return true if cell_state =~ /F/
+      return true if cell_state =~ /.*F$/
     when "RF"
-      return true if cell_state =~ /C/
-    else
-      return false
+      return true if cell_state =~ /.*C$/
     end
+    false 
   end
     
   

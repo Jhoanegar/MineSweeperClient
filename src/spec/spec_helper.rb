@@ -1,1 +1,7 @@
-require_relative '../minesweeperclient'
+require_relative '../lib/agent'
+require_relative '../lib/board'
+require_relative '../lib/client'
+require_relative '../lib/core_ext'
+require_relative '../lib/interpreter'
+require_relative '../lib/mylogger'
+require_relative '../lib/mysocket'

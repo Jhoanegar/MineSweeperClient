@@ -24,15 +24,19 @@ class Client
   end
 
   def run
-    
     while true
-       @interpreter.decode @socket.listen
-       next if @interpreter.response[0] == "ON"
-       break if @interpreter.response[0] == "FIN"
-       next_play = @agent.play @interpreter.response
-       #@logger.debug "#{self.class}: I Will send #{next_play}"
-       sleep(0.05)
-       @socket.send next_play
+      @interpreter.decode @socket.listen
+      next if @interpreter.response[0] == "ON"
+      break if @interpreter.response[0] == "FIN"
+      # begin 
+        next_play = @agent.play @interpreter.response
+        @socket.send next_play
+      # rescue Exception => e
+        # @logger.error e
+      # ensure
+        # next
+      # end
+#       sleep(0.05)
     end
 
   end

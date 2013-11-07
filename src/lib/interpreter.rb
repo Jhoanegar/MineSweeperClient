@@ -4,6 +4,7 @@ class Interpreter
   RESPONSE_REG = /^\(REG (OK|NO)\s?(P1|P2)?\)+/
   RESPONSE_GAME_STATE = /\(GE\s(\d)+\s(ON|SCORE|FIN).*\)/
   RESPONSE_BOARD_STATE = /\((BE)\s(\d)+\s(\d)+\s(\d)+.*\)/
+  COMMAND_UNCOVER = /\(UN\s(\d)+\s(\d)\)/
   attr_reader :response
   
   def self.command_matches_state?(command,cell)

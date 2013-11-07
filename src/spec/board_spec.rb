@@ -8,8 +8,8 @@ describe Board do
                ["C","C","C"],["C","C","C"]]
       end
     
-    board.width.should == 4
-    board.height.should == 3
+    board.width.should == 3
+    board.height.should == 4
     board.mines.should == 4
     board.cells.should have(4).items
     board.cells.each { |e| e.should have(3).items }

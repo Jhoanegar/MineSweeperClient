@@ -2,8 +2,7 @@ class Board
 
   include Enumerable
 
-  attr_accessor :mines, :cells, :my_flags, :enemy_flags
-  attr_reader :width, :height
+  attr_accessor :mines, :cells, :my_flags, :enemy_flags,:width, :height
 
 
   def initialize(width = nil,height = nil,mines = nil,cells = nil)
@@ -18,8 +17,8 @@ class Board
 
   def cells=(new_cells)
     @cells = new_cells
-    @width = new_cells.size
-    @height = new_cells[0].size
+    @height = new_cells.size
+    @width= new_cells[0].size
   end
 
   def to_s

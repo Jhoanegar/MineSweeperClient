@@ -2,7 +2,9 @@ class Board
 
   include Enumerable
 
-  attr_accessor :width, :height, :mines, :cells
+  attr_accessor :mines, :cells, :my_flags, :enemy_flags
+  attr_reader :width, :height
+
 
   def initialize(width = nil,height = nil,mines = nil,cells = nil)
     @width = width

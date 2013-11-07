@@ -25,7 +25,7 @@ class Board
     ret = "\n"
     height.times do |i|
       width.times do |j|
-        ret << @cells[i][j]
+        ret << @cells[i][j].chars.last
       end
       ret << "\n"
     end
@@ -33,7 +33,7 @@ class Board
   end
 
   def cell(x_coord,y_coord)
-    unless x_coord >= @cells.size or x_coord >= @cells[0].size or
+    unless x_coord >= self.height or y_coord >= self.width or
         x_coord < 0 or y_coord < 0
       return @cells[x_coord][y_coord]
     end

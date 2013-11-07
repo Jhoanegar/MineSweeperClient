@@ -57,6 +57,19 @@ describe Board do
     end
     results.should == [1,3,4,5,6]
   end 
+  
+  it 'should parse and get any cell' do
+    logger = double()
+    logger.stub(:debug)
+    inter = Interpreter.new(logger)
+    message = "BE 5 10 8 C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C"
+    cells = inter.parse_board(message)[1][3]
+    board = Board.new {|b| b.cells = cells}
+    board.height.should == 10
+    board.width.should == 8
+    board.cell(8,6).should == "C"
+  end
+    
 end
 
 

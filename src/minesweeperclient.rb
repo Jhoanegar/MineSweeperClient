@@ -5,9 +5,8 @@ require_relative 'lib/agent'
 require_relative 'lib/mysocket'
 require_relative 'lib/core_ext'
 require_relative 'lib/mylogger'
-
+require_relative 'lib/multi_io'
 #TODO: Deal with Options
-
 
 client = Client.new(MyLogger.new_logger('log.log'))
 client.start

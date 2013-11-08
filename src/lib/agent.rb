@@ -17,8 +17,8 @@ class Agent
     @logger.debug "Agent: My Board looks like this:\n#{@board.to_s}" 
     if repeat_last_play?
       return make_command
-    # elsif @board.cell(@last_play[:x],@last_play[:y]) == EMPTY_CELL
-       
+    elsif @board.cell(@last_play.x,@last_play.y) == EMPTY_CELL
+      @board.each_neighbour 
     end
 
     unless @next_plays.empty?

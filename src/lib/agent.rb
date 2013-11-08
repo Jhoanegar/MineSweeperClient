@@ -54,23 +54,28 @@ class Agent
     command = @last_message[0]
     case command
     when BOARD_STATUS
-      if @board.nil?
-        @board = Board.new do |board|
-          board.cells = @last_message[1][3]
-        end
-        @logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
-      elsif @last_message[1][4] != nil
-        @board.mines = @last_message[1][4]
-      end
-      @board.cells = @last_message[1][3]
+      set_board
     end
   end
+
 
   def make_command
     "(#{@last_play[:command]} #{@last_play[:y]} #{@last_play[:x]})" 
   end
-  private #for testing purposes 
 
+  private 
+
+  def set_board
+    if @board.nil?
+      @board = Board.new do |board|
+      board.cells = @last_message[1][3]
+    end
+    @logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
+    elsif @last_message[1][4] != nil
+      @board.mines = @last_message[1][4]
+    end
+    @board.cells = @last_message[1][3]
+  end
 
   def last_message=(message)
     @last_message = message

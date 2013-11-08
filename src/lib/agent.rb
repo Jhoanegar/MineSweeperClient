@@ -12,7 +12,7 @@ class Agent
   end
 
   def play(message)
-    self.last_message = message
+    @last_message = message
     set_attributes
     @logger.debug "Agent: My Board looks like this:\n#{@board.to_s}" 
     if repeat_last_play?

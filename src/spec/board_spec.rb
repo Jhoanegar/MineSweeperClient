@@ -16,46 +16,46 @@ describe Board do
   end
 
   it 'should return the correct cell' do
-    board = Board.new() {|b| b.cells = [[1,2],[3,4]] }
-    board.cell(1,1).should be 4
+    board = Board.new() {|b| b.cells = [["1","2"],["3","4"]] }
+    board.cell(1,1).should == "4"
   end
 
   it 'should return nil if the cell is out of bounds' do
-    board = Board.new() {|b| b.cells = [[1,2],[3,4]] }
+    board = Board.new() {|b| b.cells = [["1","2"],["3","4"]] }
     board.cell(4,4).should be nil
     board.cells.should have(2).items
   end
 
   it 'should yield all the cells' do
-    board = Board.new() {|b| b.cells = [[1,2],[3,4]] }
-    results = board.map(&:to_i)
-    results.should == [1,2,3,4]
+    board = Board.new() {|b| b.cells = [["1","2"],["3","4"]] }
+    results = board.map(&:to_s)
+    results.should == ["1","2","3","4"]
   end
 
   it 'should yield all the neighbours of a cell' do
     board = Board.new {|b| b.cells = [
-                                     [1,2,3],
-                                     [4,5,6],
-                                     [7,8,9]] }
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
     results = []
     board.each_neighbour(1,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == [1,2,3,4,6,7,8,9]
+    results.should == ["1","2","3","4","6","7","8","9"]
   end
   
   it 'should only yield the neighbours within range' do
     board = Board.new {|b| b.cells = [
-                                     [1,2,3],
-                                     [4,5,6],
-                                     [7,8,9]] }
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
    
 
     results = []
     board.each_neighbour(0,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == [1,3,4,5,6]
+    results.should == ["1","3","4","5","6"]
   end 
   
   it 'should parse and get any cell' do
@@ -68,6 +68,7 @@ describe Board do
     board.height.should == 10
     board.width.should == 8
     board.cell(8,6).should == "C"
+    board.cell(1,7).should == "E"
   end
     
 end

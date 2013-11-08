@@ -2,7 +2,7 @@
 require_relative './board'
 class Agent
   BOARD_STATUS = "BE"
-
+  EMPTY_CELL = "E"
   def initialize(logger)
     @logger = logger
     @board = nil
@@ -17,6 +17,8 @@ class Agent
     @logger.debug "Agent: My Board looks like this:\n#{@board.to_s}" 
     if repeat_last_play?
       return make_command
+    # elsif @board.cell(@last_play[:x],@last_play[:y]) == EMPTY_CELL
+       
     end
 
     unless @next_plays.empty?
@@ -30,18 +32,18 @@ class Agent
   end
 
   def random_uncover
-    @last_play = {}
-    @last_play[:x] = Random.rand(@board.height)
-    @last_play[:y] = Random.rand(@board.width)
-    @last_play[:command] = "UN"
+    @last_play = Play.new
+    @last_play.x = Random.rand(@board.height)
+    @last_play.y = Random.rand(@board.width)
+    @last_play.command = "UN"
   end
 
   def repeat_last_play?
     return false if @last_play.nil?
     @logger.debug("Ill test if i need to repeat #{@last_play.inspect}")
-    x = @last_play[:x]
-    y = @last_play[:y]
-    cmd = @last_play[:command]
+    x = @last_play.x
+    y = @last_play.y
+    cmd = @last_play.command
     @logger.debug("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
       @logger.debug "Repeating command #{@last_play.inspect}"
@@ -60,7 +62,7 @@ class Agent
 
 
   def make_command
-    "(#{@last_play[:command]} #{@last_play[:y]} #{@last_play[:x]})" 
+    "(#{@last_play.command} #{@last_play.y} #{@last_play.x})" 
   end
 
   private 

@@ -60,7 +60,7 @@ describe Board do
   
   it 'should parse and get any cell' do
     logger = double()
-    logger.stub(:debug)
+    logger.stub(:info)
     inter = Interpreter.new(logger)
     message = "BE 5 10 8 C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C"
     cells = inter.parse_board(message)[1][3]

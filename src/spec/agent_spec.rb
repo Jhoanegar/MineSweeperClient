@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe Agent do
   before(:each) do
     logger = double()
-    logger.stub(:debug)
+    logger.stub(:info)
     @logger = logger
   end
 

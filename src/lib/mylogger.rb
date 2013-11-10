@@ -10,7 +10,7 @@ module MyLogger
       date = datetime.strftime("%T,%L")
       "[#{date}] #{severity} -- :\n  #{msg}\n"
     end
-    log.debug "Logger created"
+    log.info "Logger created"
     return log
   end
 end

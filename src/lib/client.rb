@@ -16,7 +16,7 @@ class Client
     if @interpreter.response then
       @connected = true
       @player_name = @interpreter.response
-      @logger.debug "#{self.class}: Connected to server"
+      @logger.info "#{self.class}: Connected to server"
       run
     else
       raise "Can't connect to the server" 

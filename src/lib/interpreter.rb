@@ -54,7 +54,7 @@ class Interpreter
     else
       @response = "UNKNOWN COMMAND"
     end
-    @logger.debug "#{self.class}: I decoded #{@response[0].inspect}"
+    @logger.info "#{self.class}: I decoded #{@response[0].inspect}"
     @response
   end
 

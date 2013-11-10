@@ -15,13 +15,13 @@ class MySocket < UDPSocket
   
   def listen
     re = recvfrom(65536)
-    @log.debug "Received #{re[0]} from #{re[1][2]}:#{re[1][1]}"
+    @log.info "Received #{re[0]} from #{re[1][2]}:#{re[1][1]}"
     return re[0]
   end
 
   def send(message)
     super message, 0, @server_address, @server_port
-    @log.debug "Sent #{message} to #{@server_address}:#{@server_port}"
+    @log.info "Sent #{message} to #{@server_address}:#{@server_port}"
   end
 
 end

@@ -17,7 +17,7 @@ class Agent
   def play(message)
     @last_message = message
     set_attributes
-    @logger.debug "Agent: My Board looks like this:\n#{@board.to_s}" 
+    @logger.info "Agent: My Board looks like this:\n#{@board.to_s}" 
     if repeat_last_play?
       return @last_play.to_command
     elsif @last_play
@@ -27,7 +27,7 @@ class Agent
     end
 
     unless @next_plays.empty?
-      @logger.debug "Returning next play in queue"
+      @logger.info "Returning next play in queue"
       @last_play = @next_plays.last
       return @next_plays.pop.to_command
     end
@@ -54,13 +54,13 @@ class Agent
 
   def repeat_last_play?
     return false if @last_play.nil?
-    @logger.debug("Ill test if i need to repeat #{@last_play.inspect}")
+    @logger.info("Ill test if i need to repeat #{@last_play.inspect}")
     x = @last_play.x
     y = @last_play.y
     cmd = @last_play.command
-    @logger.debug("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
+    @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
-      @logger.debug "Repeating command #{@last_play.inspect}"
+      @logger.info "Repeating command #{@last_play.inspect}"
       return true
     end
     return false
@@ -84,7 +84,7 @@ class Agent
   def set_board
     if @board.nil?
       @board = Board.new { |board| board.cells = @last_message[1][3]}
-      @logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
+      @logger.info "Agent: h = #{@board.height}, w = #{@board.width}"
     elsif @last_message[1][4] != nil
       @board.mines = @last_message[1][4]
     end

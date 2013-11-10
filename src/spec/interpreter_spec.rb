@@ -3,7 +3,7 @@ require_relative './spec_helper'
 describe Interpreter do
   before(:each) do
     logger = double()
-    logger.stub(:debug)
+    logger.stub(:info)
     @inter = Interpreter.new(logger)
   end
   

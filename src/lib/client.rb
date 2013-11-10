@@ -36,7 +36,6 @@ class Client
       # ensure
         # next
       # end
-#       sleep(0.05)
     end
 
   end

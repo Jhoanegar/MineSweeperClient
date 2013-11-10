@@ -12,6 +12,7 @@ then
   echo "Commands sent: $sent_commands"
   echo "Commands lost: $lost_commands"
   echo "Unique commands: $dif"
+  echo "Percentage of success: %$((dif*100/sent_commands))"
 else
   echo "Can't read '$1'"
   exit 1

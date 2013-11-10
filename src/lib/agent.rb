@@ -28,9 +28,11 @@ class Agent
     if repeat_last_play?
       return @last_play.to_command
     elsif @last_play
-      if @board.cell(@last_play.x,@last_play.y) == EMPTY_CELL 
+      case @board.cell(@last_play.x,@last_play.y)
+      when EMPTY_CELL  
         uncover_neighbours
-      elsif @board.cell(@last_play.x,@last_play.y) == NUMERIC_CELL
+      when NUMERIC_CELL
+        @logger.info "Agent: Numeric cell found"
         @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
     end
@@ -40,7 +42,8 @@ class Agent
       @last_play = @next_plays.last
       return @next_plays.pop.to_command
     end
-    
+   
+    @logger.info @possible_flags.inspect
     if can_do_something_else? 
       return @next_plays.pop.to_command 
     end
@@ -121,6 +124,7 @@ class Agent
     @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
       @logger.info "Repeating command #{@last_play.inspect}"
+      sleep(70/1000.0)
       return true
     end
     return false

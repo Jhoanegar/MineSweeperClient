@@ -23,7 +23,7 @@ describe Play do
       p.y = "3"
       p.command = "UN"
     end
-    play.to_command.should == "(UN 3 2)"
+    play.to_command.should == "(UN 2 3)"
   end
 
   it 'should compare two plays correctly' do

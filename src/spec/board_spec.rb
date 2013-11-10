@@ -21,9 +21,11 @@ describe Board do
   end
 
   it 'should return nil if the cell is out of bounds' do
-    board = Board.new() {|b| b.cells = [["1","2"],["3","4"]] }
-    board.cell(4,4).should be nil
-    board.cells.should have(2).items
+    board = Board.new() {|b| b.cells = [["1","2"],
+                                        ["3","4"],
+                                        ["5","6"]]}
+    board.cell(2,1).should be nil
+    board.cells.should have(3).items
   end
 
   it 'should yield all the cells' do
@@ -41,7 +43,7 @@ describe Board do
     board.each_neighbour(1,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == [1,2,3,4,6,7,8,9]
+    results.should =~ [1,2,3,4,6,7,8,9]
   end
   
   it 'should only yield the neighbours within range' do
@@ -55,20 +57,24 @@ describe Board do
     board.each_neighbour(0,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == [1,3,4,5,6]
+    results.should =~ [1,2,5,7,8]
   end 
   
   it 'should parse and get any cell' do
     logger = double()
     logger.stub(:info)
     inter = Interpreter.new(logger)
-    message = "BE 5 10 8 C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C C P2E C C C C C C C C C C C C C C C C C C C C C C C C C C C"
+    message = "BE 0 5 2 C C 
+                        C C
+                        C F
+                        C C
+                        E C"
     cells = inter.parse_board(message)[1][3]
     board = Board.new {|b| b.cells = cells}
-    board.height.should == 10
-    board.width.should == 8
-    board.cell(8,6).should == "C"
-    board.cell(1,7).should == "E"
+    board.height.should == 5
+    board.width.should == 2
+    board.cell(1,2).should == "F"
+    board.cell(0,4).should == "E"
   end
     
 end

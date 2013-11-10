@@ -50,8 +50,8 @@ class Agent
 
   def random_uncover
     @last_play = Play.new
-    @last_play.x = Random.rand(@board.height)
-    @last_play.y = Random.rand(@board.width)
+    @last_play.x = Random.rand(@board.width)
+    @last_play.y = Random.rand(@board.height)
     @last_play.command = UNCOVER_COMMAND
     @last_play.to_command
   end

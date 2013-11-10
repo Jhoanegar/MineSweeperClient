@@ -33,9 +33,9 @@ class Board
   end
 
   def cell(x_coord,y_coord)
-    unless x_coord >= self.height or y_coord >= self.width or
+    unless x_coord >= self.width or y_coord >= self.height or
         x_coord < 0 or y_coord < 0
-      return @cells[x_coord][y_coord][-1]
+      return @cells[y_coord][x_coord][-1]
 
     end
     return nil

@@ -18,7 +18,7 @@ class Play
   end
  
   def to_command
-    "(#{command} #{y} #{x})"
+    "(#{command} #{x} #{y})"
   end
   
   def == other

@@ -103,14 +103,14 @@ describe Agent do
              ["E","2","C"],
              ["E","2","C"]]
     
-    expected_plays = [Play.new(2,2,"SF"),Play.new(1,2,"SF")]
+    expected_plays = [Play.new(2,2,"SF"),Play.new(2,1,"SF")]
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:possible_flags=,[Play.new(0,1,"SF"),
-                                 Play.new(0,2,"SF"),
+    agent.send(:possible_flags=,[Play.new(1,0,"SF"),
+                                 Play.new(2,0,"SF"),
                                  Play.new(1,1,"SF"),
-                                 Play.new(2,1,"SF")])
+                                 Play.new(1,2,"SF")])
     agent.send(:can_do_something_else?)
     agent.send(:next_plays).should =~ expected_plays 
   end

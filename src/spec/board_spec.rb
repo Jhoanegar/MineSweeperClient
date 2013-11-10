@@ -41,7 +41,7 @@ describe Board do
     board.each_neighbour(1,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == ["1","2","3","4","6","7","8","9"]
+    results.should == [1,2,3,4,6,7,8,9]
   end
   
   it 'should only yield the neighbours within range' do
@@ -55,7 +55,7 @@ describe Board do
     board.each_neighbour(0,1) do |cell,nx,ny|
       results << cell
     end
-    results.should == ["1","3","4","5","6"]
+    results.should == [1,3,4,5,6]
   end 
   
   it 'should parse and get any cell' do

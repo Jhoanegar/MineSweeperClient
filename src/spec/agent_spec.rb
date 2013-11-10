@@ -83,4 +83,36 @@ describe Agent do
     agent.send(:next_plays).map(&:to_command).should =~ expected_plays
   end
 
+  it 'should analyze correctly the neighbours' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(0,0,"UN"))
+    cells = [["E","E","E"],
+             ["E","1","1"],
+             ["F","1","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:analyze_neighbours,1,1).should == [1,6,1]
+
+  end
+
+  it 'should flag the correct cells' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(1,1,"UN"))
+    cells = [["E","1","1"],
+             ["E","2","C"],
+             ["E","2","C"]]
+    
+    expected_plays = [Play.new(2,2,"SF"),Play.new(1,2,"SF")]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:possible_flags=,[Play.new(0,1,"SF"),
+                                 Play.new(0,2,"SF"),
+                                 Play.new(1,1,"SF"),
+                                 Play.new(2,1,"SF")])
+    agent.send(:can_do_something_else?)
+    agent.send(:next_plays).should =~ expected_plays 
+  end
+
 end

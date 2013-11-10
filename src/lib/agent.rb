@@ -2,16 +2,23 @@
 require_relative './board'
 class Agent
   BOARD_STATUS = "BE"
+  SCORE = "SCORE"
   EMPTY_CELL = "E"
   COVERED_CELL = "C"
-  UNCOVER_COMMAND = "UN"
+  FLAGGED_CELL = "F"
+  NUMERIC_CELL = /\d/
+  UNCOVERED_CELL = /\d|E/
   
+  UNCOVER_COMMAND = "UN"
+  SET_FLAG_COMMAND = "SF" 
   def initialize(logger)
     @logger = logger
     @board = nil
     @last_message = nil
     @last_play = nil 
     @next_plays = []
+    @possible_flags = []
+    @confirmed = nil
   end
 
   def play(message)
@@ -23,6 +30,8 @@ class Agent
     elsif @last_play
       if @board.cell(@last_play.x,@last_play.y) == EMPTY_CELL 
         uncover_neighbours
+      elsif @board.cell(@last_play.x,@last_play.y) == NUMERIC_CELL
+        @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
     end
 
@@ -31,7 +40,11 @@ class Agent
       @last_play = @next_plays.last
       return @next_plays.pop.to_command
     end
-
+    
+    if can_do_something_else? 
+      return @next_plays.pop.to_command 
+    end
+    
     return random_uncover
   end
 
@@ -43,9 +56,56 @@ class Agent
     @last_play.to_command
   end
 
-  def uncover_neighbours
-    @board.each_neighbour(@last_play.x,@last_play.y) do |cell,nx,ny|
+  def can_do_something_else?
+    return false if @possible_flags.empty?
+    ary = []
+    @possible_flags.each do |p| 
+      covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
+      if flagged == @board.cell(p.x,p.y).to_i
+        uncover_neighbours(p.x,p.y)
+      elsif covered == @board.cell(p.x,p.y).to_i
+        flag_neighbours(p.x,p.y)
+      else 
+        ary << p
+      end
+    end
+    if @possible_flags.size == ary.size
+      return false
+    else
+      @possible_flags = ary
+      return true
+    end
+  end
+
+  def analyze_neighbours(x,y)
+    covered = uncovered = flagged = 0
+    @board.each_neighbour(x,y) do |cell,nx,ny|
+      case cell.to_s
+      when COVERED_CELL
+        covered += 1
+      when UNCOVERED_CELL
+        uncovered += 1
+      when FLAGGED_CELL
+        flagged += 1
+      end
+    end
+    [covered, uncovered, flagged] 
+  end
+
+
+  def uncover_neighbours(x=@last_play.x,y=@last_play.y)
+    
+    @board.each_neighbour(x,y) do |cell,nx,ny|
       p = Play.new(nx,ny,UNCOVER_COMMAND)
+      unless @next_plays.include? p or cell != COVERED_CELL
+        @next_plays.unshift p
+      end 
+    end
+  end
+
+  def flag_neighbours(x=@last_play.x,y=@last_play.y)
+    @board.each_neighbour(x,y) do |cell,nx,ny|
+      p = Play.new(nx,ny,SET_FLAG_COMMAND)
       unless @next_plays.include? p or cell != COVERED_CELL
         @next_plays.unshift p
       end 
@@ -71,6 +131,8 @@ class Agent
     case command
     when BOARD_STATUS
       set_board
+    when SCORE
+      @confirmed = true
     end
   end
 
@@ -92,6 +154,5 @@ class Agent
     @board.cells = @last_message[1][3]
   end
   
-  attr_accessor :board, :last_message, :last_play, :next_plays
+  attr_accessor :board, :last_message, :last_play, :next_plays, :possible_flags
 end
-

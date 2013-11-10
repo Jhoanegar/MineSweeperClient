@@ -36,6 +36,7 @@ class Board
     unless x_coord >= self.height or y_coord >= self.width or
         x_coord < 0 or y_coord < 0
       return @cells[x_coord][y_coord][-1]
+
     end
     return nil
   end
@@ -50,7 +51,8 @@ class Board
         nx = x_coord + x
         ny = y_coord + y
         unless cell(nx,ny).nil? or (x == 0  and y == 0)
-          yield cell(nx,ny)[-1], nx, ny
+          yield cell(nx,ny)[-1].to_i, nx, ny if cell(nx,ny)[-1] =~ /\d/
+          yield cell(nx,ny)[-1], nx, ny if cell(nx,ny)[-1] =~ /[^\d]/
         end
       end
     end

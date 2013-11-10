@@ -11,7 +11,7 @@ then
   let dif=$sent_commands-$lost_commands
   echo "Commands sent: $sent_commands"
   echo "Commands lost: $lost_commands"
-  echo "Difference: $dif"
+  echo "Unique commands: $dif"
 else
   echo "Can't read '$1'"
   exit 1

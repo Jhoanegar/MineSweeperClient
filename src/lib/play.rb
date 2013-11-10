@@ -16,5 +16,15 @@ class Play
   def y=(new_y)
     @y = new_y.to_i
   end
+ 
+  def to_command
+    "(#{command} #{y} #{x})"
+  end
+  
+  def == other
+    return true if @x == other.x and 
+                   @y == other.y and @command == other.command
 
+    return false
+  end
 end

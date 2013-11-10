@@ -3,6 +3,9 @@ require_relative './board'
 class Agent
   BOARD_STATUS = "BE"
   EMPTY_CELL = "E"
+  COVERED_CELL = "C"
+  UNCOVER_COMMAND = "UN"
+  
   def initialize(logger)
     @logger = logger
     @board = nil
@@ -16,26 +19,37 @@ class Agent
     set_attributes
     @logger.debug "Agent: My Board looks like this:\n#{@board.to_s}" 
     if repeat_last_play?
-      return make_command
-    elsif @board.cell(@last_play.x,@last_play.y) == EMPTY_CELL
-      @board.each_neighbour 
+      return @last_play.to_command
+    elsif @last_play
+      if @board.cell(@last_play.x,@last_play.y) == EMPTY_CELL 
+        uncover_neighbours
+      end
     end
 
     unless @next_plays.empty?
       @logger.debug "Returning next play in queue"
       @last_play = @next_plays.last
-      return @next_plays.pop
+      return @next_plays.pop.to_command
     end
-    random_uncover
 
-    return make_command 
+    return random_uncover
   end
 
   def random_uncover
     @last_play = Play.new
     @last_play.x = Random.rand(@board.height)
     @last_play.y = Random.rand(@board.width)
-    @last_play.command = "UN"
+    @last_play.command = UNCOVER_COMMAND
+    @last_play.to_command
+  end
+
+  def uncover_neighbours
+    @board.each_neighbour(@last_play.x,@last_play.y) do |cell,nx,ny|
+      p = Play.new(nx,ny,UNCOVER_COMMAND)
+      unless @next_plays.include? p or cell != COVERED_CELL
+        @next_plays.unshift p
+      end 
+    end
   end
 
   def repeat_last_play?
@@ -62,37 +76,22 @@ class Agent
 
 
   def make_command
-    "(#{@last_play.command} #{@last_play.y} #{@last_play.x})" 
+    @last_play.to_command
   end
 
   private 
 
   def set_board
     if @board.nil?
-      @board = Board.new do |board|
-      board.cells = @last_message[1][3]
-    end
-    @logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
+      @board = Board.new { |board| board.cells = @last_message[1][3]}
+      @logger.debug "Agent: h = #{@board.height}, w = #{@board.width}"
     elsif @last_message[1][4] != nil
       @board.mines = @last_message[1][4]
     end
+    
     @board.cells = @last_message[1][3]
   end
-
-  def last_message=(message)
-    @last_message = message
-  end
-
-  def width=(w)
-    @width = w
-  end
-
-  def height=(h)
-    @height = h
-  end
-
-  def board
-    @board
-  end
+  
+  attr_accessor :board, :last_message, :last_play, :next_plays
 end
 

@@ -50,7 +50,7 @@ class Board
         nx = x_coord + x
         ny = y_coord + y
         unless cell(nx,ny).nil? or (x == 0  and y == 0)
-          yield cell(nx,ny), nx, ny
+          yield cell(nx,ny)[-1], nx, ny
         end
       end
     end

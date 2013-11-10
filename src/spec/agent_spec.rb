@@ -7,12 +7,6 @@ describe Agent do
     @logger = logger
   end
 
-  # it 'should return a random play' do
-    # agent = Agent.new(@logger)
-    # message = "(BE 1 3 3 C C C C C C C C C)"
-    # agent.play(message).should == "Hola"
-  # end
-
   it 'should set its board correctly' do
     agent =  Agent.new(@logger)
     message = ["BE",[10, 4, 3,
@@ -33,7 +27,7 @@ describe Agent do
     agent.play(message).should =~ Interpreter::COMMAND_UNCOVER
   end
  
-  it 'should produce a random uncover withing the given bounds' do
+  it 'should produce a random uncover within the given bounds' do
     agent = Agent.new(@logger)
     message = ["BE",[10, 4, 3,
                [["C","C","C"],["C","C","C"],
@@ -41,4 +35,52 @@ describe Agent do
     play = agent.play(message)
     play.should =~ Interpreter::COMMAND_UNCOVER
   end
+
+  it 'should uncover all the neighbours of an empty cell' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(1,1,"UN"))
+    cells = [["C","C","C"],
+             ["C","E","C"],
+             ["C","C","C"]]
+    expected_plays = ["(UN 0 0)", "(UN 0 1)", "(UN 0 2)",
+                      "(UN 1 0)", "(UN 1 2)",
+                      "(UN 2 0)", "(UN 2 1)", "(UN 2 2)"]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:uncover_neighbours)
+    agent.send(:next_plays).map(&:to_command).should =~ expected_plays
+  end
+  it 'should only uncover covered cells' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(1,1,"UN"))
+    cells = [["E","C","C"],
+             ["C","E","C"],
+             ["C","C","P1F"]]
+    
+    expected_plays = ["(UN 0 1)", "(UN 0 2)",
+                      "(UN 1 0)", "(UN 1 2)",
+                      "(UN 2 0)", "(UN 2 1)"]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:uncover_neighbours)
+    agent.send(:next_plays).map(&:to_command).should =~ expected_plays
+  end 
+
+  it 'should uncover only adjacent cells' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(0,0,"UN"))
+    cells = [["E","C","C"],
+             ["C","E","C"],
+             ["C","C","P1F"]]
+    
+    expected_plays = ["(UN 0 1)","(UN 1 0)"]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:uncover_neighbours)
+    agent.send(:next_plays).map(&:to_command).should =~ expected_plays
+  end
+
 end

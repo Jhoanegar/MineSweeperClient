@@ -19,6 +19,7 @@ class Agent
     @next_plays = []
     @possible_flags = []
     @confirmed = nil
+    @score = 0
   end
 
   def play(message)
@@ -34,9 +35,9 @@ class Agent
         uncover_neighbours
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
-        @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
+        # @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
-      @last_play = nil
+      # @last_play = nil
     end
 
     unless @next_plays.empty?
@@ -44,10 +45,13 @@ class Agent
       @last_play = @next_plays.last
       return @next_plays.pop.to_command
     end
-   
-    if can_set_flags? 
-      @last_play = @next_plays.last
-      return @next_plays.pop.to_command 
+
+    if @last_play 
+      if can_set_flags? 
+        @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
+        @last_play = @next_plays.last
+        return @next_plays.pop.to_command 
+      end
     end
 
     # abort
@@ -73,13 +77,15 @@ class Agent
   end
 
   def can_set_flags?
+    set_possible_flags
     return false if @possible_flags.empty?
     ary = []
     @possible_flags.each do |p| 
+      cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if covered == @board.cell(p.x,p.y).to_i
+      if covered == cell and flagged != cell
         flag_neighbours(p.x,p.y)
-      elsif flagged == @board.cell(p.x,p.y).to_i
+      elsif flagged == cell and uncovered > 0
         uncover_neighbours(p.x,p.y)
       else 
         ary << p
@@ -110,7 +116,6 @@ class Agent
 
 
   def uncover_neighbours(x=@last_play.x,y=@last_play.y)
-    
     @board.each_neighbour(x,y) do |cell,nx,ny|
       p = Play.new(nx,ny,UNCOVER_COMMAND)
       unless @next_plays.include? p or cell != COVERED_CELL
@@ -128,6 +133,13 @@ class Agent
     end
   end
 
+  def set_possible_flags
+    @possible_flags = []
+    @board.each do |cell,x,y|
+      @possible_flags << Play.new(x,y,nil) if cell =~ /\d/
+    end
+  end
+
   def repeat_last_play?
     return false if @last_play.nil?
     @logger.info("Ill test if i need to repeat #{@last_play.inspect}")
@@ -137,7 +149,7 @@ class Agent
     @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
       @logger.info "Repeating command #{@last_play.inspect}"
-      sleep(70/1000.0)
+      # sleep(70/1000.0)
       return true
     end
     return false
@@ -148,14 +160,22 @@ class Agent
     case command
     when BOARD_STATUS
       set_board
-    when SCORE
-      @confirmed = true
     end
   end
 
 
   def make_command
     @last_play.to_command
+  end
+
+  def score=(score)
+    @score = score
+  end
+
+  def print_play(arr)
+    ret = "\n"
+    arr.each { |p| ret << p.to_command }
+    ret
   end
 
   private 

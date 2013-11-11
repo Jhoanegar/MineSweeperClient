@@ -25,19 +25,19 @@ class Client
 
   def run
     while true
-      @interpreter.decode @socket.listen
-      next if @interpreter.response[0] == "ON"
-      break if @interpreter.response[0] == "FIN"
-      # begin 
-        next_play = @agent.play @interpreter.response
-        @socket.send next_play
-      # rescue Exception => e
-        # @logger.error e
-      # ensure
-        # next
-      # end
+      @interpreter.decode(@socket.listen)
+      case @interpreter.response[0]
+      when "ON"
+        @agent.score = @interpreter.response[1]
+        next
+      when "FIN"
+        break
+      when "SCORE"
+        @agent.score = @interpreter.response
+      else
+        @socket.send(@agent.play(@interpreter.response))
+      end
     end
-
   end
 
   def connected?

@@ -56,7 +56,7 @@ describe Interpreter do
   end
 
   it 'should say when the game starts' do
-    message = "(GE 0 ON)"
+    message = "(GE 0 ON 10)"
     @inter.decode(message)
     @inter.response[0].should == "ON"
   end

@@ -2,7 +2,7 @@
 class Interpreter
   
   RESPONSE_REG = /^\(REG (OK|NO)\s?(P1|P2)?\)+/
-  RESPONSE_GAME_STATE = /\(GE\s(\d)+\s(ON|SCORE|FIN).*\)/
+  RESPONSE_GAME_STATE = /\(GE\s(\d)+\s(ON|SCORE|FIN)\s.*\)/ 
   RESPONSE_BOARD_STATE = /\((BE)\s(\d)+\s(\d)+\s(\d)+.*\)/
   COMMAND_UNCOVER = /\(UN\s(\d)+\s(\d)\)/
   attr_reader :response
@@ -41,7 +41,7 @@ class Interpreter
 
     when RESPONSE_GAME_STATE
       if $2 == "ON"
-        @response = ["ON"]
+        @response = ["ON",message.remove_parenthesis.split[3].to_i]
       elsif $2 == "SCORE"
         @response = ["SCORE",message.remove_parenthesis.split(" ")[3].to_i]
       elsif $2 == "FIN"

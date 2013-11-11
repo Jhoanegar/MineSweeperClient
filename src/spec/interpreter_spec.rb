@@ -43,11 +43,11 @@ describe Interpreter do
     Interpreter.command_matches_state?(command,cell).should == false
   end
 
-  it 'should not match UN to F' do
-    command = "UN"
-    cell = "PLAYER_1F"
-    Interpreter.command_matches_state?(command,cell).should == false
-  end
+  # it 'should not match UN to F' do
+  #   command = "UN"
+  #   cell = "PLAYER_1F"
+  #   Interpreter.command_matches_state?(command,cell).should == false
+  # end
 
   it 'should give you the name of the player' do
     message = "(REG OK P1)"

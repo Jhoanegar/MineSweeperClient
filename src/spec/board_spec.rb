@@ -30,8 +30,8 @@ describe Board do
 
   it 'should yield all the cells' do
     board = Board.new() {|b| b.cells = [["1","2"],["3","4"]] }
-    results = board.map(&:to_s)
-    results.should == ["1","2","3","4"]
+    board.map {|cell| cell}.should == ["1","2","3","4"]
+
   end
 
   it 'should yield all the neighbours of a cell' do

@@ -111,8 +111,26 @@ describe Agent do
                                  Play.new(2,0,"SF"),
                                  Play.new(1,1,"SF"),
                                  Play.new(1,2,"SF")])
-    agent.send(:can_do_something_else?)
+    agent.send(:can_set_flags?)
     agent.send(:next_plays).should =~ expected_plays 
   end
 
+  it 'should not make mistakes' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(1,1,"UN"))
+    cells = [["E","E","1","C"],
+             ["E","1","2","C"],
+             ["1","C","C","C"]]
+    
+    expected_plays = [Play.new(1,2,"SF")]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:possible_flags=,[Play.new(2,0,"SF"),
+                                 Play.new(1,1,"SF"),
+                                 Play.new(2,1,"SF"),
+                                 Play.new(0,2,"SF")])
+    agent.send(:can_set_flags?)
+    agent.send(:next_plays).should =~ expected_plays 
+    end
 end

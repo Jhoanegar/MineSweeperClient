@@ -28,6 +28,7 @@ class Agent
     if repeat_last_play?
       return @last_play.to_command
     elsif @last_play
+      @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
       when EMPTY_CELL  
         uncover_neighbours
@@ -35,6 +36,7 @@ class Agent
         @logger.info "Agent: Numeric cell found"
         @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
+      @last_play = nil
     end
 
     unless @next_plays.empty?
@@ -43,11 +45,18 @@ class Agent
       return @next_plays.pop.to_command
     end
    
-    @logger.info @possible_flags.inspect
-    if can_do_something_else? 
+    if can_set_flags? 
+      @last_play = @next_plays.last
       return @next_plays.pop.to_command 
     end
+
+    # abort
     
+    # if can_do_something_else?
+      
+    # end
+    
+    @logger.info "Sending random play"
     return random_uncover
   end
 
@@ -60,14 +69,18 @@ class Agent
   end
 
   def can_do_something_else?
+    false
+  end
+
+  def can_set_flags?
     return false if @possible_flags.empty?
     ary = []
     @possible_flags.each do |p| 
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if flagged == @board.cell(p.x,p.y).to_i
-        uncover_neighbours(p.x,p.y)
-      elsif covered == @board.cell(p.x,p.y).to_i
+      if covered == @board.cell(p.x,p.y).to_i
         flag_neighbours(p.x,p.y)
+      elsif flagged == @board.cell(p.x,p.y).to_i
+        uncover_neighbours(p.x,p.y)
       else 
         ary << p
       end

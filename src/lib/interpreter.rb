@@ -11,11 +11,11 @@ class Interpreter
     cell_state = cell.chars.last
     case command 
     when "UN"
-      return true if cell_state =~ /(E|\d)/
+      return true if cell_state != "C" 
     when "SF"
-      return true if cell_state =~ /F/
+      return true if cell_state != "C" 
     when "RF"
-      return true if cell_state =~ /C/
+      return true if cell_state == "C" 
     end
     false 
   end

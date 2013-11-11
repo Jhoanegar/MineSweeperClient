@@ -22,10 +22,32 @@ class Board
   end
 
   def to_s
-    ret = "\n"
+    
+    ret = "\n "
+    width.times {|t| ret << (t % 10).to_s}
+    ret << "\n"
     height.times do |i|
+      ret << (i % 10).to_s
       width.times do |j|
-        ret << @cells[i][j].chars.last
+        ret << case @cells[i][j].chars.last
+               when /C/
+                 "\u2588".encode("utf-8")
+               when /F/
+                 "\u2713".encode("utf-8")
+               # when /1/
+               #   "\u278A".encode("utf-8")
+               # when /2/
+               #   "\u278B".encode("utf-8")
+               # when /3/
+               #   "\u278C".encode("utf-8")
+               # when /4/
+                 # "\u278C".encode("utf-8")
+               when /E/
+                 "-"
+               else
+                 @cells[i][j].chars.last
+               end
+               
       end
       ret << "\n"
     end
@@ -41,8 +63,12 @@ class Board
     return nil
   end
 
-  def each(&block)
-    @cells.flatten.each(&block)
+  def each
+    height.times do |y|
+      width.times do |x|
+        yield cell(x,y)[-1], x, y
+      end
+    end
   end
   
   def each_neighbour(x_coord,y_coord)

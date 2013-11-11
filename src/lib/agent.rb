@@ -48,22 +48,22 @@ class Agent
 
     if @last_play 
       if can_set_flags? 
-        @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
-        @last_play = @next_plays.last
-        return @next_plays.pop.to_command 
+        # @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
+        begin
+          @last_play = @next_plays.last
+          return @next_plays.pop.to_command
+        rescue NoMethodError => e
+          @logger.info "There is no rational thing to do"
+          return "(UN -1 -1)"
+        end
+      else #if can_do_something_else?
+        
       end
     end
 
-    # abort
-    
-    # if can_do_something_else?
-      
-    # end
-    
     @logger.info "Sending random play"
     return random_uncover
   end
-
   def random_uncover
     @last_play = Play.new
     @last_play.x = Random.rand(@board.width)
@@ -73,8 +73,25 @@ class Agent
   end
 
   def can_do_something_else?
-    false
+    set_possible_flags
+    return false if @possible_flags.empty?
+    play = nil
+    ary = [] 
+    @possible_flags.each do |p| 
+      cell = @board.cell(p.x,p.y).to_i
+      if play = one_one_pattern?
+        @last_play = p
+        @next_plays << @last_play
+      elsif play = one_two_pattern?
+        @last_play = p
+        @next_plays << @last_play
+      else 
+        ary << p
+      end
+    end
   end
+
+
 
   def can_set_flags?
     set_possible_flags
@@ -83,7 +100,7 @@ class Agent
     @possible_flags.each do |p| 
       cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if cell - flagged >= uncovered and flagged != cell
+      if cell - flagged >= covered and flagged != cell
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
       elsif flagged == cell and uncovered > 0
         modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)
@@ -164,6 +181,7 @@ class Agent
   end
 
   def score=(score)
+    @logger.info "Score updated, Mines left: #{score}"
     @score = score
   end
 

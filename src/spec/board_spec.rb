@@ -60,6 +60,76 @@ describe Board do
     results.should =~ [1,2,5,7,8]
   end 
   
+  it 'should yield the top neighbours of a cell' do
+    board = Board.new {|b| b.cells = [
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
+   
+
+    results = []
+    board.each_top_neighbour(1,1) do |cell,nx,ny|
+      results << cell
+    end
+    results.should =~ [1,2,3]
+  end
+
+  it 'should yield the bottom neighbours of a cell' do
+    board = Board.new {|b| b.cells = [
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
+   
+
+    results = []
+    board.each_bottom_neighbour(1,1) do |cell,nx,ny|
+      results << cell
+    end
+    results.should =~ [7,8,9]
+  end
+
+  it 'should yield the left neighbours of a cell' do
+    board = Board.new {|b| b.cells = [
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
+   
+
+    results = []
+    board.each_left_neighbour(1,1) do |cell,nx,ny|
+      results << cell
+    end
+    results.should =~ [1,4,7]
+  end
+
+  it 'should yield the right neighbours of a cell' do
+    board = Board.new {|b| b.cells = [
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
+   
+
+    results = []
+    board.each_right_neighbour(1,1) do |cell,nx,ny|
+      results << cell
+    end
+    results.should =~ [3,6,9]
+  end
+  
+  it 'should yield the striaght neighbous of a cell' do
+    board = Board.new {|b| b.cells = [
+                                     ["1","2","3"],
+                                     ["4","5","6"],
+                                     ["7","8","9"]] }
+   
+
+    results = []
+    board.each_straight_neighbour(1,1) do |cell,nx,ny|
+      results << cell
+    end
+    results.should =~ [3,6,9]
+  end
+
   it 'should parse and get any cell' do
     logger = double()
     logger.stub(:info)

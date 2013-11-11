@@ -1,3 +1,4 @@
+require 'set'
 class Board
 
   include Enumerable
@@ -71,17 +72,53 @@ class Board
       end
     end
   end
-  
-  def each_neighbour(x_coord,y_coord)
-    [-1,0,1].each do |x|
-      [-1,0,1].each do |y|
+ 
+  def each_neighbour(x_coord,y_coord,connections = [[-1,0,1],[-1,0,1]])
+    connections[0].each do |x|
+      connections[1].each do |y|
         nx = x_coord + x
         ny = y_coord + y
-        unless cell(nx,ny).nil? or (x == 0  and y == 0)
-          yield cell(nx,ny)[-1].to_i, nx, ny if cell(nx,ny)[-1] =~ /\d/
-          yield cell(nx,ny)[-1], nx, ny if cell(nx,ny)[-1] =~ /[^\d]/
+        nc = cell(nx,ny)
+        unless nc.nil? or (x == 0  and y == 0)
+          if nc[-1] =~ /\d/
+            yield nc.to_i, nx, ny
+          else
+            yield nc, nx, ny
+          end
         end
       end
     end
   end
+ 
+  def each_straight_neighbour(x,y,&block)
+    top = right = bottom = left = []
+    each_top_neighbour(x,y).each{|cell,nx,ny| top << [cell,nx,ny]}
+    each_left_neighbour(x,y).each{|cell,nx,ny| left << [cell,nx,ny]}
+    each_right_neighbour(x,y).each{|cell,nx,ny| right << [cell,nx,ny]}
+    each_bottom_neighbour(x,y).each{|cell,nx,ny| bottom << [cell,nx,ny]}
+    neighbours = (top + left + right + bottom).to_set
+    return neighbours
+
+  end
+ 
+  def method_missing(method_name, *args, &block)
+    if method_name =~ /each_(.*)_neighbour/ and args.size == 2
+      connections = case $1
+                    when "top"
+                      [[-1,0,1],[-1]]
+                    when "left"
+                      [[-1],[-1,0,1]]
+                    when "right"
+                      [[1],[-1,0,1]]
+                    when "bottom"
+                      [[-1,0,1],[1]]
+                    else
+                      super(method_name, args)
+                    end
+      each_neighbour(args[0], args[1],connections, &block) 
+    else
+      super(method_name, args)
+    end
+  end
+
 end

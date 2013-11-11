@@ -83,7 +83,7 @@ class Agent
     @possible_flags.each do |p| 
       cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if covered == cell and flagged != cell
+      if cell - flagged >= uncovered and flagged != cell
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
       elsif flagged == cell and uncovered > 0
         modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)

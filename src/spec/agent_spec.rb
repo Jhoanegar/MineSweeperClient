@@ -48,7 +48,7 @@ describe Agent do
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:uncover_neighbours)
+    agent.send(:modify_neighbours,"UN")
     agent.send(:next_plays).map(&:to_command).should =~ expected_plays
   end
   it 'should only uncover covered cells' do
@@ -64,7 +64,7 @@ describe Agent do
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:uncover_neighbours)
+    agent.send(:modify_neighbours,"UN")
     agent.send(:next_plays).map(&:to_command).should =~ expected_plays
   end 
 
@@ -79,7 +79,7 @@ describe Agent do
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:uncover_neighbours)
+    agent.send(:modify_neighbours, "UN")
     agent.send(:next_plays).map(&:to_command).should =~ expected_plays
   end
 

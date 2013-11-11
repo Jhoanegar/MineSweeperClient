@@ -33,7 +33,8 @@ class Board
                when /C/
                  "\u2588".encode("utf-8")
                when /F/
-                 "\u2713".encode("utf-8")
+                 "*"
+                 # "\u2713".encode("utf-8")
                # when /1/
                #   "\u278A".encode("utf-8")
                # when /2/

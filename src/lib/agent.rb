@@ -32,7 +32,7 @@ class Agent
       @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
       when EMPTY_CELL  
-        uncover_neighbours
+        modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
         # @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
@@ -84,9 +84,9 @@ class Agent
       cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
       if covered == cell and flagged != cell
-        flag_neighbours(p.x,p.y)
+        modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
       elsif flagged == cell and uncovered > 0
-        uncover_neighbours(p.x,p.y)
+        modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)
       else 
         ary << p
       end
@@ -115,23 +115,18 @@ class Agent
   end
 
 
-  def uncover_neighbours(x=@last_play.x,y=@last_play.y)
+  def modify_neighbours(command = nil,x = @last_play.x, y = @last_play.y)
     @board.each_neighbour(x,y) do |cell,nx,ny|
-      p = Play.new(nx,ny,UNCOVER_COMMAND)
+      p = Play.new(nx,ny,command)
       unless @next_plays.include? p or cell != COVERED_CELL
+        @logger.info %{I will send #{command} to all the neighbours of
+        #{x},#{y} because covered, uncovered, flagged:
+        #{analyze_neighbours(x,y)}}
         @next_plays.unshift p
       end 
     end
   end
 
-  def flag_neighbours(x=@last_play.x,y=@last_play.y)
-    @board.each_neighbour(x,y) do |cell,nx,ny|
-      p = Play.new(nx,ny,SET_FLAG_COMMAND)
-      unless @next_plays.include? p or cell != COVERED_CELL
-        @next_plays.unshift p
-      end 
-    end
-  end
 
   def set_possible_flags
     @possible_flags = []

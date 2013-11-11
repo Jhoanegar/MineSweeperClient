@@ -56,8 +56,9 @@ class Agent
           @logger.info "There is no rational thing to do"
           return "(UN -1 -1)"
         end
-      else #if can_do_something_else?
-        
+      elsif can_do_something_else?
+        @last_play = @next_plays.last
+        return @next_plays.pop.to_command
       end
     end
 
@@ -75,23 +76,21 @@ class Agent
   def can_do_something_else?
     set_possible_flags
     return false if @possible_flags.empty?
-    play = nil
-    ary = [] 
-    @possible_flags.each do |p| 
-      cell = @board.cell(p.x,p.y).to_i
-      if play = one_one_pattern?
-        @last_play = p
-        @next_plays << @last_play
-      elsif play = one_two_pattern?
-        @last_play = p
-        @next_plays << @last_play
-      else 
-        ary << p
-      end
     end
   end
 
-
+  def neighbours_are_in_straight_line?(x,y)
+    return false unless size_of_covered_neighbours(x,y) == 3
+    each_covered_neighbour(x,y) do |cell, nx, ny|
+      next unless cell == COVERED_CELL
+      row ||= ny
+      col ||= nx
+      next if row == ny and col == nx
+      puts "col:#{col} == x:#{x} ; row:#{row} == y:#{y}"
+      return false unless (col == x) ^ (row == y)
+    end
+    return true
+  end
 
   def can_set_flags?
     set_possible_flags
@@ -191,6 +190,43 @@ class Agent
     ret
   end
 
+  def count_neighbours(x,y,status)
+    count = 0
+    @board.each_neighbour(x,y) do |cell|
+      case cell
+      when status
+        count += 1
+      end
+    end
+    return count
+  end
+
+  def each_special_neighbour(x,y,type)
+    @board.each_neighbour(x,y) do |cell, nx, ny|
+      case cell
+      when type
+        yield cell, nx, ny
+      end
+    end
+  end
+
+  def method_missing(method_name, *args, &block)
+    if method_name =~ /(size|number)_of_(.*)_neighbours/ and args.size == 2
+      case $2
+      when "covered"
+        count_neighbours(args[0],args[1],COVERED_CELL, &block)
+      else
+        super method_name, *args, &block
+      end
+    elsif method_name =~ /each_(.*)_neighbour/ and args.size == 2
+      case $1
+      when "covered"
+        each_special_neighbour(args[0],args[1],COVERED_CELL,&block)
+      end
+    else
+      super method_name, *args
+    end
+  end
   private 
 
   def set_board
@@ -203,6 +239,5 @@ class Agent
     
     @board.cells = @last_message[1][3]
   end
-  
   attr_accessor :board, :last_message, :last_play, :next_plays, :possible_flags
 end

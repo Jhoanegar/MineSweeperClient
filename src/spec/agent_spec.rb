@@ -133,4 +133,43 @@ describe Agent do
     agent.send(:can_set_flags?)
     agent.send(:next_plays).should =~ expected_plays 
     end
+  it 'should count the number of covered neighbours' do
+    agent = Agent.new(@logger)
+    cells = [["E","E","1","C"],
+             ["E","1","2","C"],
+             ["1","C","C","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:number_of_covered_neighbours,2,1).should == 5
+    agent.send(:size_of_covered_neighbours,3,0).should == 1
+  end
+
+  it 'should say if there are only one row of vertical neighbours' do
+    agent = Agent.new(@logger)
+    cells = [["C","E","1","C"],
+             ["C","E","2","C"],
+             ["C","E","E","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:neighbours_are_in_straight_line?,2,1).should == true
+    agent.send(:neighbours_are_in_straight_line?,2,0).should == false
+    agent.send(:neighbours_are_in_straight_line?,1,1).should == true
+  end
+    
+  it 'should say if there are only one row of horizontal neighbours' do
+    agent = Agent.new(@logger)
+    cells = [["C","C","C","C"],
+             ["E","*","E","E"],
+             ["C","C","C","E"],
+             ["E","1","E","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:neighbours_are_in_straight_line?,2,1).should == false
+    agent.send(:neighbours_are_in_straight_line?,2,0).should == false
+    agent.send(:neighbours_are_in_straight_line?,1,1).should == false
+    agent.send(:neighbours_are_in_straight_line?,1,3).should == true
+  end  
 end

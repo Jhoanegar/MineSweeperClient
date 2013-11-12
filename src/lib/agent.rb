@@ -38,6 +38,10 @@ class Agent
       end
     end
 
+    # if commented, the performance may be improved buy it
+    # may repeat the enemy moves
+    clean_next_plays!
+
     unless @next_plays.empty?
       @logger.info "Returning next play in queue"
       @last_play = @next_plays.last
@@ -57,10 +61,29 @@ class Agent
     return random_uncover
   end
 
+  def clean_next_plays!
+    @next_plays.select! do |p|
+      if p.command == UNCOVER_COMMAND
+        @board.cell(p.x,p.y) == COVERED_CELL
+      elsif p.command == SET_FLAG_COMMAND
+        @board.cell(p.x,p.y) == FLAGGED_CELL
+      else
+        false
+      end
+    end
+  end
+
   def random_uncover
+    x = 0
+    y = 0
+    loop do
+      x = Random.rand(@board.width)
+      y = Random.rand(@board.height)
+      break if @board.cell(x,y) == COVERED_CELL or @last_play.nil?
+    end 
     @last_play = Play.new
-    @last_play.x = Random.rand(@board.width)
-    @last_play.y = Random.rand(@board.height)
+    @last_play.x = x 
+    @last_play.y = y
     @last_play.command = UNCOVER_COMMAND
     @last_play.to_command
   end
@@ -81,22 +104,21 @@ class Agent
   def can_set_flags?
     set_numeric_cells
     return false if @numeric_cells.empty?
-    ary = []
+    rejected = 0
     @numeric_cells.each do |p| 
       cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if cell - flagged >= covered and flagged != cell
+      if cell - flagged >= covered #and flagged != cell
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
       elsif flagged == cell and uncovered > 0
         modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)
       else 
-        ary << p
+        rejected += 1
       end
     end
-    if @numeric_cells.size == ary.size or ary.size == 0
+    if rejected == @numeric_cells.size 
       return false
     else
-      @numeric_cells = ary
       return true
     end
   end

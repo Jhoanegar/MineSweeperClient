@@ -172,4 +172,20 @@ describe Agent do
     agent.send(:neighbours_are_in_straight_line?,1,1).should == false
     agent.send(:neighbours_are_in_straight_line?,1,3).should == true
   end  
+
+  it 'should clean the plays based on the status of the board' do
+    agent = Agent.new(@logger)
+    cells = [["C","E","F","C"],
+             ["C","E","2","C"],
+             ["C","E","E","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:next_plays=,[Play.new(0,0,"UN"),Play.new(0,1,"UN"),
+                             Play.new(0,2,"UN"),Play.new(1,0,"UN"),
+                             Play.new(2,0,"SF"),Play.new(3,0,"SF"),
+                             Play.new(1,1,"UN"),Play.new(1,2,"UN")])
+    agent.send(:clean_next_plays!)
+    agent.send(:next_plays).size.should == 4
+  end
 end

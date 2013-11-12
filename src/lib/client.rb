@@ -38,6 +38,7 @@ class Client
       when "SCORE"
         @agent.score = @interpreter.response
       else
+
         @socket.send(@agent.play(@interpreter.response))
       end
     end

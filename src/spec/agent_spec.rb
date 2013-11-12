@@ -107,7 +107,7 @@ describe Agent do
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:possible_flags=,[Play.new(1,0,"SF"),
+    agent.send(:numeric_cells=,[Play.new(1,0,"SF"),
                                  Play.new(2,0,"SF"),
                                  Play.new(1,1,"SF"),
                                  Play.new(1,2,"SF")])
@@ -126,7 +126,7 @@ describe Agent do
     board = Board.new
     board.cells = cells
     agent.send(:board=,board)
-    agent.send(:possible_flags=,[Play.new(2,0,"SF"),
+    agent.send(:numeric_cells=,[Play.new(2,0,"SF"),
                                  Play.new(1,1,"SF"),
                                  Play.new(2,1,"SF"),
                                  Play.new(0,2,"SF")])

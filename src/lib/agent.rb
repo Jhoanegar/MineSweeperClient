@@ -17,7 +17,7 @@ class Agent
     @last_message = nil
     @last_play = nil 
     @next_plays = []
-    @possible_flags = []
+    @numeric_cells = []
     @confirmed = nil
     @score = 0
   end
@@ -35,7 +35,7 @@ class Agent
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
-        # @possible_flags<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
+        # @numeric_cells<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
       # @last_play = nil
     end
@@ -56,15 +56,16 @@ class Agent
           @logger.info "There is no rational thing to do"
           return "(UN -1 -1)"
         end
-      elsif can_do_something_else?
-        @last_play = @next_plays.last
-        return @next_plays.pop.to_command
+      else #if can_do_something_else?
+        # @last_play = @next_plays.last
+        # return @next_plays.pop.to_command
       end
     end
 
     @logger.info "Sending random play"
     return random_uncover
   end
+
   def random_uncover
     @last_play = Play.new
     @last_play.x = Random.rand(@board.width)
@@ -72,11 +73,9 @@ class Agent
     @last_play.command = UNCOVER_COMMAND
     @last_play.to_command
   end
-
   def can_do_something_else?
-    set_possible_flags
-    return false if @possible_flags.empty?
-    end
+    set_numeric_cells
+    return false if @numeric_cells.empty?
   end
 
   def neighbours_are_in_straight_line?(x,y)
@@ -93,10 +92,10 @@ class Agent
   end
 
   def can_set_flags?
-    set_possible_flags
-    return false if @possible_flags.empty?
+    set_numeric_cells
+    return false if @numeric_cells.empty?
     ary = []
-    @possible_flags.each do |p| 
+    @numeric_cells.each do |p| 
       cell = @board.cell(p.x,p.y).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
       if cell - flagged >= covered and flagged != cell
@@ -107,10 +106,10 @@ class Agent
         ary << p
       end
     end
-    if @possible_flags.size == ary.size
+    if @numeric_cells.size == ary.size
       return false
     else
-      @possible_flags = ary
+      @numeric_cells = ary
       return true
     end
   end
@@ -135,8 +134,8 @@ class Agent
     @board.each_neighbour(x,y) do |cell,nx,ny|
       p = Play.new(nx,ny,command)
       unless @next_plays.include? p or cell != COVERED_CELL
-        @logger.info %{I will send #{command} to all the neighbours of
-        #{x},#{y} because covered, uncovered, flagged:
+        # @logger.info %{I will send #{command} to all the neighbours of
+        # #{x},#{y} because covered, uncovered, flagged:
         #{analyze_neighbours(x,y)}}
         @next_plays.unshift p
       end 
@@ -144,10 +143,10 @@ class Agent
   end
 
 
-  def set_possible_flags
-    @possible_flags = []
+  def set_numeric_cells
+    @numeric_cells = []
     @board.each do |cell,x,y|
-      @possible_flags << Play.new(x,y,nil) if cell =~ /\d/
+      @numeric_cells << Play.new(x,y,nil) if cell =~ /\d/
     end
   end
 
@@ -219,7 +218,7 @@ class Agent
         super method_name, *args, &block
       end
     elsif method_name =~ /each_(.*)_neighbour/ and args.size == 2
-      case $1
+      case $2
       when "covered"
         each_special_neighbour(args[0],args[1],COVERED_CELL,&block)
       end
@@ -239,5 +238,5 @@ class Agent
     
     @board.cells = @last_message[1][3]
   end
-  attr_accessor :board, :last_message, :last_play, :next_plays, :possible_flags
+  attr_accessor :board, :last_message, :last_play, :next_plays, :numeric_cells
 end

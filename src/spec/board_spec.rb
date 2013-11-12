@@ -101,7 +101,6 @@ describe Board do
     end
     results.should =~ [1,4,7]
   end
-
   it 'should yield the right neighbours of a cell' do
     board = Board.new {|b| b.cells = [
                                      ["1","2","3"],
@@ -111,20 +110,6 @@ describe Board do
 
     results = []
     board.each_right_neighbour(1,1) do |cell,nx,ny|
-      results << cell
-    end
-    results.should =~ [3,6,9]
-  end
-  
-  it 'should yield the striaght neighbous of a cell' do
-    board = Board.new {|b| b.cells = [
-                                     ["1","2","3"],
-                                     ["4","5","6"],
-                                     ["7","8","9"]] }
-   
-
-    results = []
-    board.each_straight_neighbour(1,1) do |cell,nx,ny|
       results << cell
     end
     results.should =~ [3,6,9]
@@ -146,7 +131,6 @@ describe Board do
     board.cell(1,2).should == "F"
     board.cell(0,4).should == "E"
   end
-    
-end
+end    
 
 

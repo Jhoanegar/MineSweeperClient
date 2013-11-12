@@ -90,16 +90,6 @@ class Board
     end
   end
  
-  def each_straight_neighbour(x,y,&block)
-    top = right = bottom = left = []
-    each_top_neighbour(x,y).each{|cell,nx,ny| top << [cell,nx,ny]}
-    each_left_neighbour(x,y).each{|cell,nx,ny| left << [cell,nx,ny]}
-    each_right_neighbour(x,y).each{|cell,nx,ny| right << [cell,nx,ny]}
-    each_bottom_neighbour(x,y).each{|cell,nx,ny| bottom << [cell,nx,ny]}
-    neighbours = (top + left + right + bottom).to_set
-    return neighbours
-
-  end
  
   def method_missing(method_name, *args, &block)
     if method_name =~ /each_(.*)_neighbour/ and args.size == 2

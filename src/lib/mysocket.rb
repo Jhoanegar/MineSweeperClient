@@ -1,16 +1,16 @@
 require 'socket'
 class MySocket < UDPSocket
-  DEFAULT_SERVER_ADDRESS = "127.0.0.1"
-  DEFAULT_SERVER_PORT = 4444
-  DEFAULT_CLIENT_PORT = 4445
-  def initialize(logger,
-                 server = {:address=>DEFAULT_SERVER_ADDRESS,:port => DEFAULT_SERVER_PORT},
-                 client = {:address=>DEFAULT_SERVER_ADDRESS,:port => DEFAULT_CLIENT_PORT})
-    super(Socket::AF_INET)
-    bind(client[:address],client[:port])
-    @server_address = server[:address]
-    @server_port = server[:port]
+  def initialize(logger, config)
     @log = logger
+    @server_address = config.server.address
+    @server_port = config.server.port
+
+    @log.info "Socket: Binded to #{config.host.address}:#{config.host.port}" 
+    @log.info "Socket: Server at #{@server_address}:#{@server_port}" 
+
+    super(Socket::AF_INET)
+    bind(config.host.address,config.host.port)
+
   end
   
   def listen

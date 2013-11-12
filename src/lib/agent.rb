@@ -31,12 +31,12 @@ class Agent
     elsif @last_play
       @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
+      #This will be commented out in the next server update
       when EMPTY_CELL  
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
       end
-      # @last_play = nil
     end
 
     unless @next_plays.empty?
@@ -46,18 +46,20 @@ class Agent
     end
 
     if @last_play 
-      if can_set_flags? and not @next_plays.nil? 
+      if can_set_flags? and not @next_plays.size == 0
+        # @logger.info "Next plays: \n #{@next_plays.inspect}\n"
+        # @logger.info "Size = #{@next_plays.size}"
         # @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
-        begin
+        # begin
           @last_play = @next_plays.last
           return @next_plays.pop.to_command
-        rescue NoMethodError => e
-          @logger.info "There is no rational thing to do"
-          return "(UN -1 -1)"
-        end
-      else #if can_do_something_else?
-        # @last_play = @next_plays.last
-        # return @next_plays.pop.to_command
+        # rescue NoMethodError => e
+          # @logger.info "There is no rational thing to do"
+          # return "(UN -1 -1)"
+        # end
+      elsif can_do_something_else?
+        @last_play = @next_plays.last
+        return @next_plays.pop.to_command
       end
     end
 
@@ -74,12 +76,27 @@ class Agent
   end
 
   def can_do_something_else?
+    last_resort = []
     set_numeric_cells
     return false if @numeric_cells.empty?
+    @numeric_cells.each do |p|
+      if neighbours_are_in_straight_line?(p.x,p.y)
+        neighbours = []
+        cell = @board.cell(p.x,p.y).to_i - size_of_flagged_neighbours(p.x,p.y)
+        each_numeric_neighbour(p.x,p.y) do |neighbour, nx, ny|
+          neighbours << [neighbour,nx,ny] 
+        end
+        last_resort = check_for_oneone_pattern([cell,p.x,p.y],neighbours)
+        # check_for_onetwo_pattern([cell,p.x,p.y],neighbours)
+      end
+    end
+    # return true if last_resort
+    # return false
+    return last_resort
   end
 
   def neighbours_are_in_straight_line?(x,y)
-    return false unless size_of_covered_neighbours(x,y) == 3
+    return false unless (2..3).member? size_of_covered_neighbours(x,y)
     each_covered_neighbour(x,y) do |cell, nx, ny|
       next unless cell == COVERED_CELL
       row ||= ny
@@ -137,7 +154,8 @@ class Agent
         # @logger.info %{I will send #{command} to all the neighbours of
         # #{x},#{y} because covered, uncovered, flagged:
         #{analyze_neighbours(x,y)}}
-        @next_plays.unshift p
+        @next_plays.unshift p if p.command == UNCOVER_COMMAND
+        @next_plays.push p if p.command == SET_FLAG_COMMAND
       end 
     end
   end
@@ -146,7 +164,8 @@ class Agent
   def set_numeric_cells
     @numeric_cells = []
     @board.each do |cell,x,y|
-      @numeric_cells << Play.new(x,y,nil) if cell =~ /\d/
+      @numeric_cells << Play.new(x,y,nil) if cell =~ /\d/ and
+        size_of_covered_neighbours(x,y) > 0 
     end
   end
 
@@ -202,8 +221,8 @@ class Agent
 
   def each_special_neighbour(x,y,type)
     @board.each_neighbour(x,y) do |cell, nx, ny|
-      case cell
-      when type
+    cell_s = cell.to_s
+      if cell_s =~ type 
         yield cell, nx, ny
       end
     end
@@ -214,18 +233,27 @@ class Agent
       case $2
       when "covered"
         count_neighbours(args[0],args[1],COVERED_CELL, &block)
+      when "flagged"
+        count_neighbours(args[0],args[1],FLAGGED_CELL, &block)
       else
         super method_name, *args, &block
       end
     elsif method_name =~ /each_(.*)_neighbour/ and args.size == 2
-      case $2
+      case $1
       when "covered"
-        each_special_neighbour(args[0],args[1],COVERED_CELL,&block)
+        each_special_neighbour(args[0],args[1],/C/,&block)
+      when "numeric"
+        each_special_neighbour(args[0],args[1],/\d/,&block)
       end
     else
       super method_name, *args
     end
   end
+ 
+  def check_for_oneone_pattern(cell, neighbours)
+    return [cell,neighbours]
+  end
+
   private 
 
   def set_board

@@ -145,6 +145,32 @@ describe Agent do
     agent.send(:size_of_covered_neighbours,3,0).should == 1
   end
 
+  it 'should yield the covered neighbours' do
+    res = []
+    agent = Agent.new(@logger)
+    cells = [["E","E","1","C"],
+             ["E","1","2","C"],
+             ["1","C","C","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:each_covered_neighbour,2,1) {|p| res.push p}
+    res.size.should == 5
+  end
+
+  it 'should yield the numeric neighbours' do
+    res = []
+    agent = Agent.new(@logger)
+    cells = [["E","E","1","C"],
+             ["E","1","2","C"],
+             ["1","C","C","C"]]
+    board = Board.new
+    board.cells = cells
+    agent.send(:board=,board)
+    agent.send(:each_numeric_neighbour,2,1) {|p| res.push p}
+    res.size.should == 2
+  end
+
   it 'should say if there are only one row of vertical neighbours' do
     agent = Agent.new(@logger)
     cells = [["C","E","1","C"],
@@ -154,7 +180,7 @@ describe Agent do
     board.cells = cells
     agent.send(:board=,board)
     agent.send(:neighbours_are_in_straight_line?,2,1).should == true
-    agent.send(:neighbours_are_in_straight_line?,2,0).should == false
+    agent.send(:neighbours_are_in_straight_line?,2,0).should == true
     agent.send(:neighbours_are_in_straight_line?,1,1).should == true
   end
     
@@ -168,8 +194,35 @@ describe Agent do
     board.cells = cells
     agent.send(:board=,board)
     agent.send(:neighbours_are_in_straight_line?,2,1).should == false
-    agent.send(:neighbours_are_in_straight_line?,2,0).should == false
+    # agent.send(:neighbours_are_in_straight_line?,2,0).should == false
     agent.send(:neighbours_are_in_straight_line?,1,1).should == false
     agent.send(:neighbours_are_in_straight_line?,1,3).should == true
   end  
+  
+  it 'should detect a one-one pattern' do 
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(0,3,"UN"))
+    agent.send(:next_plays=,[])
+    cells = [["C","C","C","C"],
+             ["C","C","C","C"],
+             ["1","1","1","1"],
+             ["E","E","E","E"]]
+    agent.send(:board=,Board.new {|b| b.cells = cells})
+    message = ["BE",[0,4,4,cells]]
+    agent.send(:can_do_something_else?).should == 2
+  end
+
+  it 'should detect a one-one pattern' do
+    agent = Agent.new(@logger)
+    agent.send(:last_play=,Play.new(0,3,"UN"))
+    agent.send(:next_plays=,[])
+    cells = [["C","C","C","C"],
+             ["C","C","C","C"],
+             ["1","1","1","1"],
+             ["E","E","E","E"]]
+    agent.send(:board=,Board.new {|b| b.cells = cells})
+    message = ["BE",[0,4,4,cells]]
+    agent.send(:check_for_oneone_pattern).should == true
+    
+  end
 end

@@ -8,6 +8,7 @@ class Client
     @interpreter = Interpreter.new(logger)
     @agent = Agent.new(logger)
     @player_name = ""
+    @win = false
   end
 
   def start
@@ -16,7 +17,7 @@ class Client
     if @interpreter.response then
       @connected = true
       @player_name = @interpreter.response
-      @logger.info "#{self.class}: Connected to server"
+      @logger.info "#{self.class}: Connected to server, name: #{@player_name}"
       run
     else
       raise "Can't connect to the server" 
@@ -31,6 +32,7 @@ class Client
         @agent.score = @interpreter.response[1]
         next
       when "FIN"
+        @win = true if @interpreter.response[1][0] == "W#{@player_name}"
         break
       when "SCORE"
         @agent.score = @interpreter.response
@@ -38,9 +40,16 @@ class Client
         @socket.send(@agent.play(@interpreter.response))
       end
     end
+    @logger.info "Client: Game Finished"
+    celebrate! if @win
   end
 
   def connected?
     @connected
+  end
+
+  def celebrate!
+    rain = Rain.new
+    rain.play
   end
 end

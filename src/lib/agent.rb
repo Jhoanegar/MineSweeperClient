@@ -35,7 +35,6 @@ class Agent
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
-        # @numeric_cells<<Play.new(@last_play.x,@last_play.y,SET_FLAG_COMMAND) 
       end
       # @last_play = nil
     end
@@ -47,7 +46,7 @@ class Agent
     end
 
     if @last_play 
-      if can_set_flags? 
+      if can_set_flags? and not @next_plays.nil? 
         # @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
         begin
           @last_play = @next_plays.last
@@ -73,6 +72,7 @@ class Agent
     @last_play.command = UNCOVER_COMMAND
     @last_play.to_command
   end
+
   def can_do_something_else?
     set_numeric_cells
     return false if @numeric_cells.empty?
@@ -106,7 +106,7 @@ class Agent
         ary << p
       end
     end
-    if @numeric_cells.size == ary.size
+    if @numeric_cells.size == ary.size or ary.size == 0
       return false
     else
       @numeric_cells = ary

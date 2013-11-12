@@ -1,10 +1,11 @@
-#andles all the components
+#Handles all the components
 class Client
   
-  def initialize(logger, socket = nil)
+  def initialize(config_object)
+    logger = MyLogger.new_logger config_object.file
     @logger = logger
     @connected = false
-    @socket = socket || MySocket.new(logger)
+    @socket = MySocket.new(logger, config_object)
     @interpreter = Interpreter.new(logger)
     @agent = Agent.new(logger)
     @player_name = ""

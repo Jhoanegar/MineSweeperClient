@@ -31,12 +31,11 @@ class Agent
     elsif @last_play
       @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
-      when EMPTY_CELL  
+      when EMPTY_CELL #comment if server is updated
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
         @logger.info "Agent: Numeric cell found"
       end
-      # @last_play = nil
     end
 
     unless @next_plays.empty?
@@ -46,18 +45,11 @@ class Agent
     end
 
     if @last_play 
-      if can_set_flags? and not @next_plays.nil? 
-        # @logger.info "I can't uncover any cell I'll try #{print_play(@next_plays)}"
-        begin
+      if can_set_flags? and @next_plays.size > 0 
           @last_play = @next_plays.last
           return @next_plays.pop.to_command
-        rescue NoMethodError => e
-          @logger.info "There is no rational thing to do"
-          return "(UN -1 -1)"
-        end
-      else #if can_do_something_else?
-        # @last_play = @next_plays.last
-        # return @next_plays.pop.to_command
+      else
+        @logger.info "There is no rational thing to do"
       end
     end
 
@@ -71,11 +63,6 @@ class Agent
     @last_play.y = Random.rand(@board.height)
     @last_play.command = UNCOVER_COMMAND
     @last_play.to_command
-  end
-
-  def can_do_something_else?
-    set_numeric_cells
-    return false if @numeric_cells.empty?
   end
 
   def neighbours_are_in_straight_line?(x,y)
@@ -137,7 +124,8 @@ class Agent
         # @logger.info %{I will send #{command} to all the neighbours of
         # #{x},#{y} because covered, uncovered, flagged:
         #{analyze_neighbours(x,y)}}
-        @next_plays.unshift p
+        @next_plays.unshift p if p.command == UNCOVER_COMMAND
+        @next_plays.push p if p.command == SET_FLAG_COMMAND
       end 
     end
   end

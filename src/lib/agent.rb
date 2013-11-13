@@ -11,6 +11,7 @@ class Agent
   
   UNCOVER_COMMAND = "UN"
   SET_FLAG_COMMAND = "SF" 
+  REMOVE_FLAG_COMMAND = "RF"
   def initialize(logger)
     @logger = logger
     @board = nil
@@ -29,7 +30,7 @@ class Agent
     if repeat_last_play? 
       return @last_play.to_command
     elsif undo_last_play?
-      return @last_play.to_comman
+      return @last_play.to_command
     elsif @last_play
       @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
@@ -66,11 +67,14 @@ class Agent
   def undo_last_play?
     return false if @last_play.nil?
     if @last_play.command == SET_FLAG_COMMAND
+      @logger.info "I'll test if I need to undo  #{@last_play.to_command}"
       unless @set_flag_confirmed
-        @last_play.command == REMOVE_FLAG_COMMAND
+        @last_play.command = REMOVE_FLAG_COMMAND
+        @logger.info "I'll undo the last play with #{@last_play.to_command}"
         return true
       else
-        @set_flag_confirmed = false
+        @logger.info "I won't undo the last play"
+
         return false
       end
     end
@@ -99,7 +103,11 @@ class Agent
     @last_play = Play.new
     @last_play.x = x 
     @last_play.y = y
-    @last_play.command = UNCOVER_COMMAND
+    unless @set_flag_confirmed.nil?
+      @last_play.command = SET_FLAG_COMMAND
+    else
+      @last_play.command = UNCOVER_COMMAND
+    end
     @last_play.to_command
   end
 
@@ -125,6 +133,7 @@ class Agent
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
       if cell - flagged >= covered #and flagged != cell
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
+        @set_flag_confirmed = false
       elsif flagged == cell and uncovered > 0
         modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)
       else 
@@ -177,7 +186,7 @@ class Agent
 
   def repeat_last_play?
     return false if @last_play.nil?
-    @logger.info("Ill test if i need to repeat #{@last_play.inspect}")
+    @logger.info("Ill test if i need to repeat #{@last_play.to_command}")
     x = @last_play.x
     y = @last_play.y
     cmd = @last_play.command
@@ -204,8 +213,8 @@ class Agent
   end
 
   def score=(score)
-    @logger.info "Score updated, Mines left: #{score}"
-    @score = score
+    @logger.info "Score updated, Mines left: #{score[1]}"
+    @score = score[1]
     if @last_play 
       if @last_play.command == SET_FLAG_COMMAND
         @set_flag_confirmed = true

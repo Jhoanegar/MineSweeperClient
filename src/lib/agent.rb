@@ -26,8 +26,10 @@ class Agent
     @last_message = message
     set_attributes
     @logger.info "Agent: My Board looks like this:\n#{@board.to_s}" 
-    if repeat_last_play?
+    if repeat_last_play? 
       return @last_play.to_command
+    elsif undo_last_play?
+      return @last_play.to_comman
     elsif @last_play
       @logger.info "I didn't have to repeat the play."
       case @board.cell(@last_play.x,@last_play.y)
@@ -59,6 +61,19 @@ class Agent
 
     @logger.info "Sending random play"
     return random_uncover
+  end
+
+  def undo_last_play?
+    return false if @last_play.nil?
+    if @last_play.command == SET_FLAG_COMMAND
+      unless @set_flag_confirmed
+        @last_play.command == REMOVE_FLAG_COMMAND
+        return true
+      else
+        @set_flag_confirmed = false
+        return false
+      end
+    end
   end
 
   def clean_next_plays!
@@ -191,6 +206,11 @@ class Agent
   def score=(score)
     @logger.info "Score updated, Mines left: #{score}"
     @score = score
+    if @last_play 
+      if @last_play.command == SET_FLAG_COMMAND
+        @set_flag_confirmed = true
+      end
+    end
   end
 
   def print_play(arr)

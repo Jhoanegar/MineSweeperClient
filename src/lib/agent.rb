@@ -229,11 +229,11 @@ class Agent
     cell_state = cell.chars.last
     case command 
     when UNCOVER_COMMAND
-      return true if cell_state != "C" 
+      return true if cell_state != COVERED_CELL 
     when SET_FLAG_COMMAND
-      return true if cell_state != "C" 
+      return true if cell_state != COVERED_CELL 
     when REMOVE_FLAG_COMMAND
-      return true if cell_state == "C" 
+      return true if cell_state == COVERED_CELL 
     end
     false 
   end

@@ -35,15 +35,6 @@ class Board
                  "\u2588".encode("utf-8")
                when /F/
                  "*"
-                 # "\u2713".encode("utf-8")
-               # when /1/
-               #   "\u278A".encode("utf-8")
-               # when /2/
-               #   "\u278B".encode("utf-8")
-               # when /3/
-               #   "\u278C".encode("utf-8")
-               # when /4/
-                 # "\u278C".encode("utf-8")
                when /E/
                  "-"
                else
@@ -56,11 +47,17 @@ class Board
     ret
   end
 
-  def cell(x_coord,y_coord)
-    unless x_coord >= self.width or y_coord >= self.height or
-        x_coord < 0 or y_coord < 0
-      return @cells[y_coord][x_coord][-1]
-
+  def cell(*args)
+    if args.respond_to?(:x) and args.respond_to?(:y)
+      x = args.x
+      y = args.y
+    elsif args.size == 2
+      x = args[0]
+      y = args[1]
+    end
+    unless x >= self.width or y >= self.height or
+        x < 0 or y < 0
+      return @cells[y][x][-1]
     end
     return nil
   end

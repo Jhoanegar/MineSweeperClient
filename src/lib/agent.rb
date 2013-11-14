@@ -33,7 +33,7 @@ class Agent
       return @last_play.to_command
     elsif @last_play
       @logger.info "I didn't have to repeat the play."
-      case @board.cell(@last_play.x,@last_play.y)
+      case @board.cell(@last_play.coords)
       when EMPTY_CELL #comment if server is updated
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL

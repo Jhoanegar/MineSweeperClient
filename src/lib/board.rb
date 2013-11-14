@@ -48,9 +48,9 @@ class Board
   end
 
   def cell(*args)
-    if args.respond_to?(:x) and args.respond_to?(:y)
-      x = args.x
-      y = args.y
+    if args[0].respond_to?(:x) and args[0].respond_to?(:y)
+      x = args[0].x
+      y = args[0].y
     elsif args.size == 2
       x = args[0]
       y = args[1]
@@ -70,9 +70,17 @@ class Board
     end
   end
  
-  def each_neighbour(x_coord,y_coord,connections = [[-1,0,1],[-1,0,1]])
-    connections[0].each do |x|
-      connections[1].each do |y|
+  def each_neighbour(*args)
+    connections = [-1,0,1]
+    if args[0].respond_to?(:x) and args[0].respond_to?(:y)
+      x_coord = args[0].x
+      y_coord = args[0].y
+    elsif args.size == 2
+      x_coord = args[0]
+      y_coord = args[1]
+    end
+    connections.each do |x|
+      connections.each do |y|
         nx = x_coord + x
         ny = y_coord + y
         nc = cell(nx,ny)
@@ -87,25 +95,4 @@ class Board
     end
   end
  
- 
-  def method_missing(method_name, *args, &block)
-    if method_name =~ /each_(.*)_neighbour/ and args.size == 2
-      connections = case $1
-                    when "top"
-                      [[-1,0,1],[-1]]
-                    when "left"
-                      [[-1],[-1,0,1]]
-                    when "right"
-                      [[1],[-1,0,1]]
-                    when "bottom"
-                      [[-1,0,1],[1]]
-                    else
-                      super(method_name, args)
-                    end
-      each_neighbour(args[0], args[1],connections, &block) 
-    else
-      super(method_name, args)
-    end
-  end
-
 end

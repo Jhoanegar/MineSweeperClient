@@ -1,30 +1,46 @@
 class Play
   attr_accessor :command
-  attr_reader :x, :y
 
   def initialize(x=nil,y=nil,cmd=nil)
-    @x = x.to_i
-    @y = y.to_i
+    @coords = Coords.new(x.to_i,y.to_i)
     @command = cmd
     yield self if block_given?
   end
 
-  def x=(new_x)
-    @x = new_x.to_i
-  end
-
-  def y=(new_y)
-    @y = new_y.to_i
-  end
- 
   def to_command
-    "(#{command} #{x} #{y})"
+    "(#{command} #{@coords.x} #{@coords.y})"
   end
   
   def == other
-    return true if @x == other.x and 
-                   @y == other.y and @command == other.command
+    if @coords == other.coords and @command == other.command
+      return true 
+    else
+      return false
+    end
+  end
 
-    return false
+  def x=(new_x)
+    @coords.x = new_x.to_i
+  end
+
+  def y=(new_x)
+    @coords.y = new_x.to_i
+  end
+
+  def x
+    @coords.x
+  end
+
+  def y
+    @coords.y
+  end
+
+  def coords
+    @coords
+  end
+
+  class Coords < Struct.new(:x,:y)
   end
 end
+
+

@@ -83,9 +83,9 @@ class Agent
   def clean_next_plays!
     @next_plays.select! do |p|
       if p.command == UNCOVER_COMMAND
-        @board.cell(p.x,p.y) == COVERED_CELL
+        @board.cell(p.coords) == COVERED_CELL
       elsif p.command == SET_FLAG_COMMAND
-        @board.cell(p.x,p.y) == FLAGGED_CELL
+        @board.cell(p.coords) == FLAGGED_CELL
       else
         false
       end
@@ -111,27 +111,15 @@ class Agent
     @last_play.to_command
   end
 
-  def neighbours_are_in_straight_line?(x,y)
-    return false unless size_of_covered_neighbours(x,y) == 3
-    each_covered_neighbour(x,y) do |cell, nx, ny|
-      next unless cell == COVERED_CELL
-      row ||= ny
-      col ||= nx
-      next if row == ny and col == nx
-      puts "col:#{col} == x:#{x} ; row:#{row} == y:#{y}"
-      return false unless (col == x) ^ (row == y)
-    end
-    return true
-  end
 
   def can_set_flags?
     set_numeric_cells
     return false if @numeric_cells.empty?
     rejected = 0
     @numeric_cells.each do |p| 
-      cell = @board.cell(p.x,p.y).to_i
+      cell = @board.cell(p.coords).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if cell - flagged >= covered #and flagged != cell
+      if cell - flagged >= covered 
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
         @set_flag_confirmed = false
       elsif flagged == cell and uncovered > 0
@@ -193,7 +181,6 @@ class Agent
     @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
       @logger.info "Repeating command #{@last_play.inspect}"
-      # sleep(70/1000.0)
       return true
     end
     return false
@@ -227,45 +214,6 @@ class Agent
     arr.each { |p| ret << p.to_command }
     ret
   end
-
-  def count_neighbours(x,y,status)
-    count = 0
-    @board.each_neighbour(x,y) do |cell|
-      case cell
-      when status
-        count += 1
-      end
-    end
-    return count
-  end
-
-  def each_special_neighbour(x,y,type)
-    @board.each_neighbour(x,y) do |cell, nx, ny|
-      case cell
-      when type
-        yield cell, nx, ny
-      end
-    end
-  end
-
-  def method_missing(method_name, *args, &block)
-    if method_name =~ /(size|number)_of_(.*)_neighbours/ and args.size == 2
-      case $2
-      when "covered"
-        count_neighbours(args[0],args[1],COVERED_CELL, &block)
-      else
-        super method_name, *args, &block
-      end
-    elsif method_name =~ /each_(.*)_neighbour/ and args.size == 2
-      case $2
-      when "covered"
-        each_special_neighbour(args[0],args[1],COVERED_CELL,&block)
-      end
-    else
-      super method_name, *args
-    end
-  end
-  private 
 
   def set_board
     if @board.nil?

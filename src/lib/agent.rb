@@ -111,7 +111,6 @@ class Agent
     @last_play.to_command
   end
 
-
   def can_set_flags?
     set_numeric_cells
     return false if @numeric_cells.empty?
@@ -179,7 +178,7 @@ class Agent
     y = @last_play.y
     cmd = @last_play.command
     @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
-    unless Interpreter.command_matches_state?(cmd,@board.cell(x,y))
+    unless command_matches_state?(cmd,@board.cell(x,y))
       @logger.info "Repeating command #{@last_play.inspect}"
       return true
     end
@@ -225,5 +224,19 @@ class Agent
     
     @board.cells = @last_message[1][3]
   end
+
+  def command_matches_state?(command,cell)
+    cell_state = cell.chars.last
+    case command 
+    when UNCOVER_COMMAND
+      return true if cell_state != "C" 
+    when SET_FLAG_COMMAND
+      return true if cell_state != "C" 
+    when REMOVE_FLAG_COMMAND
+      return true if cell_state == "C" 
+    end
+    false 
+  end
+
   attr_accessor :board, :last_message, :last_play, :next_plays, :numeric_cells
 end

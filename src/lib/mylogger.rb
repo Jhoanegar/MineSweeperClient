@@ -1,7 +1,7 @@
 require 'logger'
 require 'date'
 # Allows the construction of a customized Logger object that outputs an event
-#  log in both STDOUT and a text file.
+# log in both STDOUT and a text file.
 module MyLogger
   # Creates a new Logger object with a custom format for its output.
   # @param file_name [String] the name of the file to create with the log.

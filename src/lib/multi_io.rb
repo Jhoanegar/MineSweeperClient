@@ -1,5 +1,5 @@
 # Defines a custom IO device that, instead of just having one output
-# object, has several. This allows the Logger class to log to several streams.
+#  object, has several. This allows the Logger class to log to several streams.
 class MultiIO
 	# Initializes the object, storing in an array the objects for future log.
 	# @param [#write,#close] the objects to store the log

@@ -3,10 +3,10 @@ class Play
 
   # @!attribute [rw] command
   #   @return [String] the string representation of the
-  #     command in the format understood by the server.
+  #    command in the format understood by the server.
   # @!attribute [rw] coords
   #   @return [Struct] an object that responds to .x and .y
-  #     representing the coordinates of the play.
+  #    representing the coordinates of the play.
   # @!attribute [rw] x
   #   @return [Fixnum] the column of the play.
   # @!attribute [rw] y
@@ -32,7 +32,7 @@ class Play
   end
   
   # Two plays are equal iff their respective coordinates
-  #   and commands are equal.
+  #  and commands are equal.
   # @param other [Play] the play to be comapared to self.
   def == other
     if @coords == other.coords and @command == other.command
@@ -62,7 +62,7 @@ class Play
     @coords
   end
   # Simple class to group the coordinates of a play in
-  #   a single variable.
+  #  a single variable.
   class Coords < Struct.new(:x,:y)
   end
 end

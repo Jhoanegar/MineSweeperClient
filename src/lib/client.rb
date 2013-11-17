@@ -27,6 +27,7 @@ class Client
     end
   end
 
+  # Main cycle of the program, it asks the interpreter to decode the 
   def run
     while true
       @interpreter.decode(@socket.listen)

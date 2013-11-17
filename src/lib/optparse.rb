@@ -9,7 +9,7 @@ class OptParse
 
   # Verifies the address:port entered by the user
   # @param [Array<String>] an array containig the address of a host
-  #   and a port number.
+  #  and a port number.
   def self.valid_server?(arr)
     if arr.first == "localhost" or arr.first =~ VALID_IPV4_ADDRESS
       return true if arr.last =~ VALID_PORT
@@ -19,7 +19,7 @@ class OptParse
 
   # Parses the string of options entered by the user
   # @param args [Array<String>] an array containing all the options
-  #   entered by the user, i.e. the contents or ARGV.
+  #  entered by the user, i.e. the contents or ARGV.
   def self.parse(args)
     options = OpenStruct.new
     options.host = OpenStruct.new
@@ -63,9 +63,9 @@ class OptParse
   
   # Returns the configuration object.
   # @param buffer [Array<String>] the array that contains an element for each
-  #   option given by the user.
+  #  option given by the user.
   # @return [OptParse] a struck-like object containing the options 
-  #   of the program.
+  #  of the program.
 
   def self.config_object(buffer)
     begin

@@ -142,7 +142,7 @@ class Agent
   end
 
   # Removes already executed plays from the queue, this is implemented
-  #   in case the enemy have sent the command in the last cycle.
+  #  in case the enemy have sent the command in the last cycle.
   def clean_next_plays!
     @next_plays.select! do |p|
       if p.command == UNCOVER_COMMAND
@@ -156,8 +156,8 @@ class Agent
   end
 
   # Determines if it is possible to set flags and/or uncover new cells as a
-  #   consequence of setting flags. If it can be done, the same method will
-  #   enqueue the corresponding plays.
+  #  consequence of setting flags. If it can be done, the same method will
+  #  enqueue the corresponding plays.
   def can_set_flags?
     set_numeric_cells
     return false if @numeric_cells.empty?
@@ -182,9 +182,9 @@ class Agent
   end
 
   # Generates a new random play, based on the covered cells remaining.
-  #   If @set_flag_confirmed is used at all, the agent will play more safely,
-  #   sending SF commands instead of UN commands. It may be modified to play
-  #   more agressively.
+  #  If @set_flag_confirmed is used at all, the agent will play more safely,
+  #  sending SF commands instead of UN commands. It may be modified to play
+  #  more agressively.
   def random_play
     x = 0
     y = 0

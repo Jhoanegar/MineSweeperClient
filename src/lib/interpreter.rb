@@ -5,7 +5,7 @@ class Interpreter
   RESPONSE_BOARD_STATE = /\((BE)\s(\d)+\s(\d)+\s(\d)+.*\)/
   COMMAND_UNCOVER = /\(UN\s(\d)+\s(\d)\)/
 
-  # @!attribute [r] contains the last command received from the server.
+  # @!attribute response [r] contains the last command received from the server.
 
   attr_reader :response
   
@@ -22,7 +22,7 @@ class Interpreter
     "(REG #{player_name[0...7]})"
   end
   # Transforms the message received by the server in an array that contains
-  #   the name of the command in [0] and its contetns in [1].
+  #  the name of the command in [0] and its contetns in [1].
   # @param message [String]
   def decode(message)
     case message
@@ -53,7 +53,7 @@ class Interpreter
 
   # Creates the response when the message is a (BE).
   # @param message [String] the portion of the message that contains
-  #   the board state.
+  #  the board state.
   # @return [Array<Array>]
   def parse_board(message)
     command, cycle, n_rows, n_cols,cells = message.split(" ",5)

@@ -56,9 +56,9 @@ class Board
 
   # Gets a specific cell in the board.
   # @param args [Array] if only one argument is received, it should respond to
-  #   :x and :y methods that contain the coordinates of the cell. Else if, 
-  #   two parameters are received, they would be treated as the x and y coordinate
-  #   respectively.
+  #  :x and :y methods that contain the coordinates of the cell. Else if, 
+  #  two parameters are received, they would be treated as the x and y coordinate
+  #  respectively.
   # @return [String] only the last character of the cell representing its state.
   def cell(*args)
     if args[0].respond_to?(:x) and args[0].respond_to?(:y)
@@ -85,11 +85,11 @@ class Board
     end
   end
  
- # Iterates over the 8-conn neighbours of a cell
-   # @param args [Array] if only one argument is received, it should respond to
-  #   :x and :y methods that contain the coordinates of the cell. Else if, 
-  #   two parameters are received, they would be treated as the x and y coordinate
-  #   respectively.
+  # Iterates over the 8-conn neighbours of a cell
+  # @param args [Array] if only one argument is received, it should respond to
+  #  :x and :y methods that contain the coordinates of the cell. Else if, 
+  #  two parameters are received, they would be treated as the x and y coordinate
+  #  respectively.
   # @yield [cell_state,x,y] gives the contentn and coordinates of the current cell.
   def each_neighbour(*args)
     connections = [-1,0,1]

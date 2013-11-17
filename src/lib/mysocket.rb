@@ -18,7 +18,7 @@ class MySocket < UDPSocket
   end
 
   # Waits until the server sends a package to the client and returns
-  #   only the data, discarding the AF_INET package details.
+  #  only the data, discarding the AF_INET package details.
   # return <String> the data received.
   def listen
     re = recvfrom(65536)

@@ -3,14 +3,12 @@ require_relative './spec_helper'
 describe Board do
   it 'should initialize correctly' do
     board = Board.new do |new_board|
-      new_board.mines = 4
       new_board.cells = [["C","C","C"],["C","C","C"],
                ["C","C","C"],["C","C","C"]]
       end
     
     board.width.should == 3
     board.height.should == 4
-    board.mines.should == 4
     board.cells.should have(4).items
     board.cells.each { |e| e.should have(3).items }
   end
@@ -59,61 +57,6 @@ describe Board do
     end
     results.should =~ [1,2,5,7,8]
   end 
-  
-  it 'should yield the top neighbours of a cell' do
-    board = Board.new {|b| b.cells = [
-                                     ["1","2","3"],
-                                     ["4","5","6"],
-                                     ["7","8","9"]] }
-   
-
-    results = []
-    board.each_top_neighbour(1,1) do |cell,nx,ny|
-      results << cell
-    end
-    results.should =~ [1,2,3]
-  end
-
-  it 'should yield the bottom neighbours of a cell' do
-    board = Board.new {|b| b.cells = [
-                                     ["1","2","3"],
-                                     ["4","5","6"],
-                                     ["7","8","9"]] }
-   
-
-    results = []
-    board.each_bottom_neighbour(1,1) do |cell,nx,ny|
-      results << cell
-    end
-    results.should =~ [7,8,9]
-  end
-
-  it 'should yield the left neighbours of a cell' do
-    board = Board.new {|b| b.cells = [
-                                     ["1","2","3"],
-                                     ["4","5","6"],
-                                     ["7","8","9"]] }
-   
-
-    results = []
-    board.each_left_neighbour(1,1) do |cell,nx,ny|
-      results << cell
-    end
-    results.should =~ [1,4,7]
-  end
-  it 'should yield the right neighbours of a cell' do
-    board = Board.new {|b| b.cells = [
-                                     ["1","2","3"],
-                                     ["4","5","6"],
-                                     ["7","8","9"]] }
-   
-
-    results = []
-    board.each_right_neighbour(1,1) do |cell,nx,ny|
-      results << cell
-    end
-    results.should =~ [3,6,9]
-  end
 
   it 'should parse and get any cell' do
     logger = double()

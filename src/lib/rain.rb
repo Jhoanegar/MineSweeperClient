@@ -1,12 +1,13 @@
 require "curses"
 include Curses
     
-    
+# Creates a raining animation using ncurces.h
 class Rain  
   def ranf
     rand(32767).to_f / 32767
   end
   
+  # Plays the animation
   def play  
     init_screen
     nl

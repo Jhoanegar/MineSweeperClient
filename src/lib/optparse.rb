@@ -1,8 +1,15 @@
 require 'ostruct'
 require 'optparse'
+# Parser for command line arguments
 class OptParse
+  # Regular expression for IPV4 addersses.
   VALID_IPV4_ADDRESS = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/
+  # Regular expression for port numbers.
   VALID_PORT = /^\d{1,5}$/
+
+  # Verifies the address:port entered by the user
+  # @param [Array<String>] an array containig the address of a host
+  #   and a port number.
   def self.valid_server?(arr)
     if arr.first == "localhost" or arr.first =~ VALID_IPV4_ADDRESS
       return true if arr.last =~ VALID_PORT
@@ -10,6 +17,9 @@ class OptParse
     return false
   end
 
+  # Parses the string of options entered by the user
+  # @param args [Array<String>] an array containing all the options
+  #   entered by the user, i.e. the contents or ARGV.
   def self.parse(args)
     options = OpenStruct.new
     options.host = OpenStruct.new
@@ -51,6 +61,12 @@ class OptParse
     options
   end 
   
+  # Returns the configuration object.
+  # @param buffer [Array<String>] the array that contains an element for each
+  #   option given by the user.
+  # @return [OptParse] a struck-like object containing the options 
+  #   of the program.
+
   def self.config_object(buffer)
     begin
       opt = OptParse.parse(buffer)

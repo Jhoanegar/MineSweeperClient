@@ -1,6 +1,7 @@
 #Handles all the components
 class Client
-  
+  # Creates the new client object
+  # @param config_object [Struct] an struct containing the configuration options
   def initialize(config_object)
     logger = MyLogger.new_logger config_object.file
     @logger = logger
@@ -12,6 +13,7 @@ class Client
     @win = false
   end
 
+  # Sets up the new game.
   def start
     @socket.send(@interpreter.connect_command)
     @interpreter.decode(@socket.listen)

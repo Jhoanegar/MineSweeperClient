@@ -1,36 +1,43 @@
 require 'set'
+# Represents the board of the game
 class Board
-
+  # For each, map, and all the enumerable methods.
   include Enumerable
+  # @!attribute [rw] cells
+  #   @return [Array<Array>] a bidimensional Array containing the cells.
+  # @!attribute [rw] width
+  #   @return [Fixnum] the number of columns in the board.
+  # @!attribute [rw] height
+  #   @return [Fixmun] the number of rows in the board.
+  
+  
+  attr_accessor :cells,:width, :height
 
-  attr_accessor :mines, :cells, :my_flags, :enemy_flags,:width, :height
-
-
-  def initialize(width = nil,height = nil,mines = nil,cells = nil)
-    @width = width
-    @height = height
-    @mines = mines
-    @cells = cells
-    @my_flags = 0
-    @enemy_flags = 0
+  # Creates the board
+  # @yieldparam [Board] returns self for explicit initialization.
+  def initialize(cells = nil)
+    @cells = nil
     yield self if block_given?
   end
 
+  # Setter method for @cells.
+  # @param new_cells [Array<Array>] the new cells of the board.
   def cells=(new_cells)
     @cells = new_cells
     @height = new_cells.size
     @width= new_cells[0].size
   end
 
+  # Represents the board as a String.
+  # @return [String] the board represented as a String.
   def to_s
-    
     ret = "\n "
     width.times {|t| ret << (t % 10).to_s}
     ret << "\n"
     height.times do |i|
       ret << (i % 10).to_s
       width.times do |j|
-        ret << case @cells[i][j].chars.last
+        ret << case cell(j,i)
                when /C/
                  "\u2588".encode("utf-8")
                when /F/
@@ -38,7 +45,7 @@ class Board
                when /E/
                  "-"
                else
-                 @cells[i][j].chars.last
+                 cell(j,i)
                end
                
       end
@@ -47,6 +54,12 @@ class Board
     ret
   end
 
+  # Gets a specific cell in the board.
+  # @param args [Array] if only one argument is received, it should respond to
+  #   :x and :y methods that contain the coordinates of the cell. Else if, 
+  #   two parameters are received, they would be treated as the x and y coordinate
+  #   respectively.
+  # @return [String] only the last character of the cell representing its state.
   def cell(*args)
     if args[0].respond_to?(:x) and args[0].respond_to?(:y)
       x = args[0].x
@@ -62,6 +75,8 @@ class Board
     return nil
   end
 
+  # Iterates over the cells.
+  # @yield [cell_state,x,y] gives the contentn and coordinates of the current cell.
   def each
     height.times do |y|
       width.times do |x|
@@ -70,6 +85,12 @@ class Board
     end
   end
  
+ # Iterates over the 8-conn neighbours of a cell
+   # @param args [Array] if only one argument is received, it should respond to
+  #   :x and :y methods that contain the coordinates of the cell. Else if, 
+  #   two parameters are received, they would be treated as the x and y coordinate
+  #   respectively.
+  # @yield [cell_state,x,y] gives the contentn and coordinates of the current cell.
   def each_neighbour(*args)
     connections = [-1,0,1]
     if args[0].respond_to?(:x) and args[0].respond_to?(:y)
@@ -94,5 +115,4 @@ class Board
       end
     end
   end
- 
 end

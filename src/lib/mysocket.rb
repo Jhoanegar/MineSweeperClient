@@ -16,7 +16,7 @@ class MySocket < UDPSocket
     super(Socket::AF_INET)
     begin
       bind(config.host.address,config.host.port)
-    rescue Errno::EADDRINUSE,Errno::ENOTCONN => e
+    rescue Errno::EADDRINUSE
       @log.error "Address already in use, please use a different address."
       abort
     end
@@ -26,7 +26,12 @@ class MySocket < UDPSocket
   #  only the data, discarding the AF_INET package details.
   # return <String> the data received.
   def listen
-    re = recvfrom(65536)
+    begin
+      re = recvfrom(65536)
+    rescue Errno::ECONNRESET
+      @log.error "Couldn't reach the server. Is the server running?"
+      abort
+    end
     @log.info "Received #{re[0]} from #{re[1][2]}:#{re[1][1]}"
     return re[0]
   end

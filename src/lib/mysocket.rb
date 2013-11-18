@@ -10,11 +10,16 @@ class MySocket < UDPSocket
     @server_address = config.server.address
     @server_port = config.server.port
 
-    @log.info "Socket: Binded to #{config.host.address}:#{config.host.port}" 
-    @log.info "Socket: Server at #{@server_address}:#{@server_port}" 
+    @log.info "Socket: Binded to #{config.host.address}:#{config.host.port}"
+    @log.info "Socket: Server at #{@server_address}:#{@server_port}"
 
     super(Socket::AF_INET)
-    bind(config.host.address,config.host.port)
+    begin
+      bind(config.host.address,config.host.port)
+    rescue Errno::EADDRINUSE,Errno::ENOTCONN => e
+      @log.error "Address already in use, please use a different address."
+      abort
+    end
   end
 
   # Waits until the server sends a package to the client and returns

@@ -1,4 +1,4 @@
-MineSweeperClient
+﻿MineSweeperClient
 Agente inteligente para el juego de buscaminas multijudador desarrollado
 en Ruby.
 
@@ -20,6 +20,7 @@ Estructura de carpetas
 
 ├── LEEME.txt - El archivo que estás viendo.
 ├── LICENSE - La licencia de todos los archivos contenidos en el proyecto.
+├── MSC - Descripción general del sistema.
 └── src/ 
     ├── doc/ - Detalles de la implementación (abrir index.html).
     ├── lib/ - Código fuente del programa.
@@ -91,6 +92,7 @@ Apéndice
   
 ├── LEEME.txt
 ├── LICENSE
+├── MSC
 └── src
     ├── doc
     │   ├── Agent.html

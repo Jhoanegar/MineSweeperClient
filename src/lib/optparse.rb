@@ -23,12 +23,13 @@ class OptParse
   def self.parse(args)
     options = OpenStruct.new
     options.host = OpenStruct.new
-    options.server = OpenStruct.new 
+    options.server = OpenStruct.new
     options.host.address = "127.0.0.1"
-    options.host.port = 4445 
+    options.host.port = 4445
     options.server.address = "127.0.0.1"
     options.server.port = 4444
     options.file = 'log.log'
+    options.verbose = false
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: #{__FILE__} [CONFIG]"
 
@@ -43,7 +44,7 @@ class OptParse
               "  Default: 4445") do |port|
         options.host.port = port
       end
-      
+
       opts.on("-s", "--server ADDRESS:PORT",
               "The client will comunicate to ADDRESS:PORT.",
               "  Default: 127.0.0.1:4444") do |server|
@@ -55,16 +56,19 @@ class OptParse
               options.server.address = arr.first
               options.server.port = arr.last
       end
+      opts.on("-v", "--[no-]verbose", "Run verbosely.") do |v|
+        options.verbose = true
+      end
     end
 
     opt_parser.parse!(args)
     options
-  end 
-  
+  end
+
   # Returns the configuration object.
   # @param buffer [Array<String>] the array that contains an element for each
   #  option given by the user.
-  # @return [OptParse] a struck-like object containing the options 
+  # @return [OptParse] a struck-like object containing the options
   #  of the program.
 
   def self.config_object(buffer)
@@ -75,13 +79,15 @@ class OptParse
       when "s"
         puts "#{__FILE__}: The correct format is ADDRESS:PORT for instance '127.0.0.1:4444'."
         puts " See '#{__FILE__} -h' for help."
-      when "p" 
+      when "p"
         puts "#{__FILE__}: The port should be an integer of up to 5 digits."
         puts " See '#{__FILE__} -h' for help."
       end
+      abort
     rescue OptionParser::InvalidOption => e
       puts "#{__FILE__}: Unknown option."
       puts " See '#{__FILE__} -h' for help."
+      abort
     ensure
     end
   end

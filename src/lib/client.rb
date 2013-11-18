@@ -3,7 +3,7 @@ class Client
   # Creates the new client object
   # @param config_object [Struct] an struct containing the configuration options
   def initialize(config_object)
-    logger = MyLogger.new_logger config_object.file
+    logger = MyLogger.new_logger(config_object.file,config_object.verbose)
     @logger = logger
     @connected = false
     @socket = MySocket.new(logger, config_object)
@@ -23,11 +23,11 @@ class Client
       @logger.info "#{self.class}: Connected to server, name: #{@player_name}"
       run
     else
-      raise "Can't connect to the server" 
+      raise "Can't connect to the server"
     end
   end
 
-  # Main cycle of the program, it asks the interpreter to decode the 
+  # Main cycle of the program, it asks the interpreter to decode the
   def run
     while true
       @interpreter.decode(@socket.listen)

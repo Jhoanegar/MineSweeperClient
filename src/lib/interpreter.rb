@@ -1,14 +1,14 @@
 # Handles the text to object conversion.
 class Interpreter
   RESPONSE_REG = /^\(REG (OK|NO)\s?(P1|P2)?\)+/
-  RESPONSE_GAME_STATE = /\(GE\s(\d)+\s(ON|SCORE|FIN)\s.*\)/ 
+  RESPONSE_GAME_STATE = /\(GE\s(\d)+\s(ON|SCORE|FIN)\s.*\)/
   RESPONSE_BOARD_STATE = /\((BE)\s(\d)+\s(\d)+\s(\d)+.*\)/
   COMMAND_UNCOVER = /\(UN\s(\d)+\s(\d)\)/
 
   # @!attribute response [r] contains the last command received from the server.
 
   attr_reader :response
-  
+
   # Creates the Interpreter.
   # @param logger [Logger] the object to output the log.
   def initialize(logger)
@@ -27,7 +27,7 @@ class Interpreter
   def decode(message)
     case message
     when RESPONSE_REG
-      if $1 == "OK" 
+      if $1 == "OK"
         @response = $2
       elsif $1 == "NO"
         @response = nil
@@ -41,13 +41,13 @@ class Interpreter
         @response = ["FIN",
             message.remove_parenthesis.split(" ")[-4..-1]]
       end
-  
+
     when RESPONSE_BOARD_STATE
       @response = parse_board(message.remove_parenthesis)
     else
       @response = "UNKNOWN COMMAND"
     end
-    @logger.info "#{self.class}: I decoded #{@response[0].inspect}"
+    @logger.debug "#{self.class}: I decoded #{@response}"
     @response
   end
 
@@ -60,14 +60,14 @@ class Interpreter
     board = build_board(cells,n_rows.to_i,n_cols.to_i)
     return [command,[cycle.to_i,n_rows.to_i,n_cols.to_i,board]]
   end
-  
+
   # Helper method to parse_board that builds the board..
   # @param cells <String> with only the portion of the message that has
   #   the actual board state.
   # @param rows <Fixnum> the number of rows in the board.
   # @param cols <Fixnum> the number of cols in the board.
-  # @return <Array> the board in a bidimensional array. 
-  def build_board(cells,rows,cols) 
+  # @return <Array> the board in a bidimensional array.
+  def build_board(cells,rows,cols)
     board = []
     cells = cells.split
     rows.times do |i|
@@ -78,6 +78,6 @@ class Interpreter
     end
     return board
   end
-  
+
 end
 

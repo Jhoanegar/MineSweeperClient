@@ -9,7 +9,7 @@ class Agent
   NUMERIC_CELL = /\d/
   UNCOVERED_CELL = /\d|E/
   UNCOVER_COMMAND = "UN"
-  SET_FLAG_COMMAND = "SF" 
+  SET_FLAG_COMMAND = "SF"
   REMOVE_FLAG_COMMAND = "RF"
 
   # @!attribute [rw] board
@@ -35,7 +35,7 @@ class Agent
     @logger = logger
     @board = nil
     @last_message = nil
-    @last_play = nil 
+    @last_play = nil
     @next_plays = []
     @numeric_cells = []
     @confirmed = nil
@@ -54,18 +54,18 @@ class Agent
   def play(message)
     @last_message = message
     set_attributes
-    @logger.info "Agent: My Board looks like this:\n#{@board.to_s}" 
-    if repeat_last_play? 
+    @logger.info "Agent: My Board looks like this:\n#{@board.to_s}"
+    if repeat_last_play?
       return @last_play.to_command
     elsif undo_last_play?
       return @last_play.to_command
     elsif @last_play
-      @logger.info "I didn't have to repeat the play."
+      @logger.debug "I didn't have to repeat the play."
       case @board.cell(@last_play.coords)
       when EMPTY_CELL #comment if server is updated
         modify_neighbours UNCOVER_COMMAND
       when NUMERIC_CELL
-        @logger.info "Agent: Numeric cell found"
+        @logger.debug "Agent: Numeric cell found"
       end
     end
 
@@ -74,21 +74,21 @@ class Agent
     clean_next_plays!
 
     unless @next_plays.empty?
-      @logger.info "Returning next play in queue"
+      @logger.debug "Returning next play in queue"
       @last_play = @next_plays.last
       return @next_plays.pop.to_command
     end
 
-    if @last_play 
-      if can_set_flags? and @next_plays.size > 0 
+    if @last_play
+      if can_set_flags? and @next_plays.size > 0
           @last_play = @next_plays.last
           return @next_plays.pop.to_command
       else
-        @logger.info "There is no rational thing to do"
+        @logger.debug "There is no rational thing to do"
       end
     end
 
-    @logger.info "Sending random play"
+    @logger.debug "Sending random play"
     return random_play
   end
 
@@ -112,13 +112,13 @@ class Agent
   # Determines if the last sent play was completed and repeats it if necessary.
   def repeat_last_play?
     return false if @last_play.nil?
-    @logger.info("Ill test if i need to repeat #{@last_play.to_command}")
+    @logger.debug("Ill test if i need to repeat #{@last_play.to_command}")
     x = @last_play.x
     y = @last_play.y
     cmd = @last_play.command
-    @logger.info("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
+    @logger.debug("x:#{x} y:#{y} cell:#{@board.cell(x,y)}")
     unless command_matches_state?(cmd,@board.cell(x,y))
-      @logger.info "Repeating command #{@last_play.inspect}"
+      @logger.debug "Repeating command #{@last_play.to_command}"
       return true
     end
     return false
@@ -128,13 +128,13 @@ class Agent
   def undo_last_play?
     return false if @last_play.nil?
     if @last_play.command == SET_FLAG_COMMAND
-      @logger.info "I'll test if I need to undo  #{@last_play.to_command}"
+      @logger.debug "I'll test if I need to undo  #{@last_play.to_command}"
       unless @set_flag_confirmed
         @last_play.command = REMOVE_FLAG_COMMAND
-        @logger.info "I'll undo the last play with #{@last_play.to_command}"
+        @logger.debug "I'll undo the last play with #{@last_play.to_command}"
         return true
       else
-        @logger.info "I won't undo the last play"
+        @logger.debug "I won't undo the last play"
 
         return false
       end
@@ -162,19 +162,19 @@ class Agent
     set_numeric_cells
     return false if @numeric_cells.empty?
     rejected = 0
-    @numeric_cells.each do |p| 
+    @numeric_cells.each do |p|
       cell = @board.cell(p.coords).to_i
       covered, uncovered, flagged = analyze_neighbours(p.x,p.y)
-      if cell - flagged >= covered 
+      if cell - flagged >= covered
         modify_neighbours(SET_FLAG_COMMAND,p.x,p.y,)
         @set_flag_confirmed = false
       elsif flagged == cell and uncovered > 0
         modify_neighbours(UNCOVER_COMMAND,p.x,p.y,)
-      else 
+      else
         rejected += 1
       end
     end
-    if rejected == @numeric_cells.size 
+    if rejected == @numeric_cells.size
       return false
     else
       return true
@@ -192,9 +192,9 @@ class Agent
       x = Random.rand(@board.width)
       y = Random.rand(@board.height)
       break if @board.cell(x,y) == COVERED_CELL or @last_play.nil?
-    end 
+    end
     @last_play = Play.new
-    @last_play.x = x 
+    @last_play.x = x
     @last_play.y = y
     # If an agressive agent is wanted, remove the unless-else statement and uncomment
     # the following statement:
@@ -221,7 +221,7 @@ class Agent
         flagged += 1
       end
     end
-    [covered, uncovered, flagged] 
+    [covered, uncovered, flagged]
   end
 
   # Queues an alteration to the 8-conn neighbours of a cell.
@@ -235,10 +235,10 @@ class Agent
       unless @next_plays.include? p or cell != COVERED_CELL
         @logger.debug %{I will send #{command} to all the neighbours of
         #{x},#{y} because covered, uncovered, flagged:
-        {analyze_neighbours(x,y)}}
+        #{analyze_neighbours(x,y)}}
         @next_plays.unshift p if p.command == UNCOVER_COMMAND
         @next_plays.push p if p.command == SET_FLAG_COMMAND
-      end 
+      end
     end
   end
 
@@ -246,7 +246,7 @@ class Agent
   def score=(score)
     @logger.info "Score updated, Mines left: #{score[1]}"
     @score = score[1]
-    if @last_play 
+    if @last_play
       if @last_play.command == SET_FLAG_COMMAND
         @set_flag_confirmed = true
       end
@@ -261,7 +261,7 @@ class Agent
     elsif @last_message[1][4] != nil
       @board.mines = @last_message[1][4]
     end
-    
+
     @board.cells = @last_message[1][3]
   end
 
@@ -271,15 +271,15 @@ class Agent
   # @return [Boolean]
   def command_matches_state?(command,cell)
     cell_state = cell
-    case command 
+    case command
     when UNCOVER_COMMAND
-      return true if cell_state != COVERED_CELL 
+      return true if cell_state != COVERED_CELL
     when SET_FLAG_COMMAND
-      return true if cell_state != COVERED_CELL 
+      return true if cell_state != COVERED_CELL
     when REMOVE_FLAG_COMMAND
-      return true if cell_state == COVERED_CELL 
+      return true if cell_state == COVERED_CELL
     end
-    false 
+    false
   end
 
 end
